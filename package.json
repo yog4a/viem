@@ -2,6 +2,13 @@
   "name": "@yog4a/viem",
   "description": "Personal encapsulation module for viem",
   "version": "0.2.20",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yog4a/viem.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yog4a/viem/issues"
+  },
   "type": "module",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
