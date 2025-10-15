@@ -7,24 +7,7 @@ yarn.lock
 # Build outputs
 dist/
 build/
-coverage/
-.temp/
-.cache/
 
 # Env and logs
 .env
 .env.local
-*.log
-npm-debug.log*
-pnpm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-
-# TypeScript
-*.tsbuildinfo
-
-# IDEs
-.vscode/
-.idea/
-.DS_Store
-*.swp
