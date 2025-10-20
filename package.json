@@ -43,6 +43,12 @@
       "require": "./dist/index.cjs",
       "default": "./dist/index.mjs"
     },
+    "./chains": {
+      "types": "./dist/chains.d.ts",
+      "import": "./dist/chains.mjs",
+      "require": "./dist/chains.cjs",
+      "default": "./dist/chains.mjs"
+    },
     "./public": {
       "types": "./dist/clients/public.d.ts",
       "import": "./dist/clients/public.mjs",
