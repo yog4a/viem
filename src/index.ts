@@ -1,2 +1,3 @@
 export * from "viem";
-export { default as chains, type Chain } from "viem/chains";
+export * as chains from "viem/chains";
+export type { Chain } from "viem/chains";
