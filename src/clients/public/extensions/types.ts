@@ -25,6 +25,8 @@ export {
 export { 
   type TraceFilterResult,
   type TraceFilterParams,
+  type TraceAction,
+  type SuicideAction,
 } from './trace/types/traceFilter.types.js';
 export { 
   TraceType,
