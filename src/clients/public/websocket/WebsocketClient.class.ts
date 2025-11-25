@@ -25,7 +25,7 @@ export class WebsocketClient extends Client<'websocket'> {
         // Log
         if (debug) {
             console.info(
-                `Client initialized: ${provider.url.slice(0, 30)}... (${provider.type})`
+                `Client initialized: ${provider.url.slice(0, 30)}... (${provider.name})`
             );
         }
     }
@@ -38,7 +38,6 @@ export namespace WebsocketClient {
     export interface Provider {
         name: string,
         url: `ws://${string}` | `wss://${string}`,
-        type: 'debug' | 'trace',
     };
     export interface Parameters {
         chain: number | Chain,

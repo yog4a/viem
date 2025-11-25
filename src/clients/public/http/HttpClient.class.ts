@@ -25,7 +25,7 @@ export class HttpClient extends Client<'http'> {
         // Log
         if (debug) {
             console.info(
-                `Client initialized: ${provider.url.slice(0, 30)}... (${provider.type})`
+                `Client initialized: ${provider.url.slice(0, 30)}... (${provider.name})`
             );
         }
     }
@@ -38,7 +38,6 @@ export namespace HttpClient {
     export interface Provider {
         name: string,
         url: `http://${string}` | `https://${string}`,
-        type: 'debug' | 'trace',
     };
     export interface Parameters {
         /* Chain id or chain object (allow to use new chains) */
