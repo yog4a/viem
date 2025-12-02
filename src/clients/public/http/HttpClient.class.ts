@@ -25,7 +25,7 @@ export class HttpClient extends Client<'http'> {
         // Log
         if (debug) {
             console.info(
-                `Client initialized: ${provider.url.slice(0, 30)}... (${provider.name})`
+                `[Viem] Http client initialized: ${provider.url.slice(0, 30)}... (${provider.name})`
             );
         }
     }

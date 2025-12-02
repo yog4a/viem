@@ -25,7 +25,7 @@ export class WebsocketClient extends Client<'websocket'> {
         // Log
         if (debug) {
             console.info(
-                `Client initialized: ${provider.url.slice(0, 30)}... (${provider.name})`
+                `[Viem] Websocket client initialized: ${provider.url.slice(0, 30)}... (${provider.name})`
             );
         }
     }
@@ -40,9 +40,13 @@ export namespace WebsocketClient {
         url: `ws://${string}` | `wss://${string}`,
     };
     export interface Parameters {
+        /* Chain id or chain object (allow to use new chains) */
         chain: number | Chain,
+        /* The provider to use */
         provider: Provider,
+        /* The transport config */
         transportConfig?: WebSocketTransportConfig,
+        /* Whether to enable debug mode */
         debug?: boolean,
     };
 };
