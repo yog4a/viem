@@ -14,6 +14,7 @@
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "scripts": {
+    "prepare": "tsup",
     "build": "tsup",
     "build:patch": "pnpm version patch && tsup",
     "build:minor": "pnpm version minor && tsup",
@@ -22,7 +23,8 @@
     "version:minor": "pnpm version minor",
     "version:major": "pnpm version major",
     "update": "pnpm up --latest",
-    "publish:npm": "pnpm publish --registry https://registry.npmjs.org/"
+    "publish:npm": "pnpm publish --registry https://registry.npmjs.org/",
+    "release": "git push --follow-tags"
   },
   "devDependencies": {
     "@types/node": "^24.10.1",
