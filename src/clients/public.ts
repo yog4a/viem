@@ -1,5 +1,10 @@
-// Exports
-export { HttpClient } from './public/http/HttpClient.class.js';
-export { WebsocketClient } from './public/websocket/WebsocketClient.class.js';
-export * from './public/extensions/types.js';
-export * from './public/websocket/extensions/types.js';
+export { 
+    PublicHttpClient,
+    type PublicHttpClientProvider,
+    type PublicHttpClientParameters,
+} from './public-client/client.http.js';
+export { 
+    PublicWebsocketClient,
+    type PublicWebsocketClientProvider,
+    type PublicWebsocketClientParameters,
+} from './public-client/client.websocket.js';
