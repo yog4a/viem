@@ -1,43 +1,43 @@
-import type { Address, Hash, Hex } from "viem";
+import type { Address, Hash, Hex, Quantity } from "viem";
 
+// ===========================================================
 // Types
 // ===========================================================
 
-
 /* The configuration for the tracing options. */
 export type TracingOptions =
-    | {
-        tracer: 'callTracer';
-        tracerConfig?: {
-            /* When set to true, this will only trace the primary (top-level) call and not any sub-calls. */
-            onlyTopCall?: boolean;
-        };
-    }
-    | {
-        tracer: 'prestateTracer';
-        tracerConfig?: {
-            /* When set to true, this will return the difference between the prestate and the poststate. */
-            diffMode?: boolean;
-        };
+  | {
+    tracer: 'callTracer';
+    tracerConfig?: {
+      /* When set to true, this will only trace the primary (top-level) call and not any sub-calls. */
+      onlyTopCall?: boolean;
     };
+  }
+  | {
+    tracer: 'prestateTracer';
+    tracerConfig?: {
+      /* When set to true, this will return the difference between the prestate and the poststate. */
+      diffMode?: boolean;
+    };
+  };
 
 /**
  * Transaction call object for debug_traceCall RPC.
  * Follows the eth_call object input shape with tracing extension.
  */
 export type DebugTraceCallOptions = {
-    /** The address the transaction is sent from */
-    from?: Address;
-    /** [REQUIRED] The address the transaction is directed to */
-    to: Address;
-    /** The integer of the gas provided for the transaction execution */
-    gas?: Hex | bigint | number;
-    /** The integer of the gasPrice used for each paid gas */
-    gasPrice?: Hex | bigint | number;
-    /** The integer of the value sent with this transaction */
-    value?: Hex | bigint | number;
-    /** The hash of the method signature and encoded parameters */
-    data?: Hex;
+  /** The address the transaction is sent from */
+  from?: Address;
+  /** [REQUIRED] The address the transaction is directed to */
+  to: Address;
+  /** The integer of the gas provided for the transaction execution */
+  gas?: Hex | bigint | number;
+  /** The integer of the gasPrice used for each paid gas */
+  gasPrice?: Hex | bigint | number;
+  /** The integer of the value sent with this transaction */
+  value?: Hex | bigint | number;
+  /** The hash of the method signature and encoded parameters */
+  data?: Hex;
 };
 
 

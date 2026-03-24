@@ -22,7 +22,7 @@ import traceFilter from './trace/traceFilter.js';
 // Function
 // ===========================================================
 
-export function setupCustomCalls(client: PublicClient) {
+export function setupCustomRpcCalls(client: PublicClient) {
     return {
         // Eth
         ethBlockNumber: ethBlockNumber(client),

@@ -1,2 +1,1 @@
-// src/chains.ts
-export * from "viem/chains";
+export*from"viem/chains";export{};
