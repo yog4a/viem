@@ -1,60 +1,54 @@
 {
   "name": "@yog4a/viem",
   "description": "Personal encapsulation module for viem",
-  "version": "0.3.0",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/yog4a/viem.git"
-  },
-  "bugs": {
-    "url": "https://github.com/yog4a/viem/issues"
-  },
+  "version": "1.0.0",
   "type": "module",
-  "main": "./dist/index.js",
+  "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
-  "types": "./dist/index.d.ts",
+  "types": "./dist/index.d.cts",
   "scripts": {
-    "build": "tsup",
-    "build:patch": "pnpm version patch && tsup",
-    "build:minor": "pnpm version minor && tsup",
-    "build:major": "pnpm version major && tsup",
-    "version:patch": "pnpm version patch",
-    "version:minor": "pnpm version minor",
-    "version:major": "pnpm version major",
-    "update": "pnpm up --latest",
-    "publish:npm": "pnpm publish --registry https://registry.npmjs.org/",
-    "release": "git push --follow-tags"
+    "build": "tsdown",
+    "build:patch": "npm version patch && npm run build",
+    "build:minor": "npm version minor && npm run build",
+    "build:major": "npm version major && npm run build",
+    "version:patch": "npm version patch",
+    "version:minor": "npm version minor",
+    "version:major": "npm version major",
+    "update:check": "npx npm-check-updates",
+    "update:install": "npx npm-check-updates -u && npm install",
+    "tags": "git push --follow-tags"
   },
   "devDependencies": {
-    "@types/node": "^25.2.2",
-    "tsup": "^8.5.1",
+    "@types/node": "^25.5.0",
+    "tsdown": "^0.21.4",
     "tsx": "^4.21.0",
     "typescript": "^5.9.3"
   },
   "dependencies": {
-    "viem": "^2.45.2"
+    "viem": "^2.47.6"
   },
   "files": [
-    "dist"
+    "dist",
+    "LICENSE.md",
+    "README.md"
   ],
   "exports": {
     ".": {
-      "types": "./dist/index.d.ts",
       "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs",
-      "default": "./dist/index.mjs"
+      "require": "./dist/index.cjs"
     },
     "./chains": {
-      "types": "./dist/chains.d.ts",
       "import": "./dist/chains.mjs",
-      "require": "./dist/chains.cjs",
-      "default": "./dist/chains.mjs"
+      "require": "./dist/chains.cjs"
     },
-    "./public": {
-      "types": "./dist/clients/public.d.ts",
-      "import": "./dist/clients/public.mjs",
-      "require": "./dist/clients/public.cjs",
-      "default": "./dist/clients/public.mjs"
-    }
+    "./clients": {
+      "import": "./dist/clients.mjs",
+      "require": "./dist/clients.cjs"
+    },
+    "./extensions": {
+      "import": "./dist/extensions.mjs",
+      "require": "./dist/extensions.cjs"
+    },
+    "./package.json": "./package.json"
   }
 }
