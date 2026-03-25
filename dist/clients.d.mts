@@ -3,9 +3,6 @@ import { Chain, HttpTransport, HttpTransportConfig, PublicClient, PublicClientCo
 import { Chain as Chain$1 } from "viem/chains";
 
 //#region src/clients/public-client/client.websocket.d.ts
-declare class PublicWebsocketClient extends PublicBaseClient<'websocket'> {
-  constructor(params: PublicWebsocketClientParameters);
-}
 interface PublicWebsocketClientProvider {
   name: string;
   url: `ws://${string}` | `wss://${string}`;
@@ -17,8 +14,30 @@ interface PublicWebsocketClientParameters {
   clientConfig?: Omit<PublicClientConfig<WebSocketTransport, Chain>, 'chain' | 'transport'>;
   debug?: boolean;
 }
+declare class PublicWebsocketClient extends PublicBaseClient<'websocket'> {
+  constructor(params: PublicWebsocketClientParameters);
+}
 //#endregion
 //#region src/clients/public-client/client.base.d.ts
+/** The public client type */
+type PublicBaseClientPublic<T extends keyof PublicBaseClientTransport> = PublicClient<PublicBaseClientTransport[T], Chain$1>;
+/** The provider type */
+interface PublicBaseClientProvider {
+  http: PublicHttpClientProvider;
+  websocket: PublicWebsocketClientProvider;
+}
+/** The transport type */
+interface PublicBaseClientTransport {
+  http: HttpTransport;
+  websocket: WebSocketTransport;
+}
+/** The parameters type */
+interface PublicBaseClientParameters<T extends keyof PublicBaseClientTransport> {
+  chain: number | Chain$1;
+  provider: PublicBaseClientProvider[T];
+  transport: PublicBaseClientTransport[T];
+  clientConfig?: Omit<PublicClientConfig<PublicBaseClientTransport[T], Chain$1>, 'chain' | 'transport'>;
+}
 declare class PublicBaseClient<T extends keyof PublicBaseClientTransport> {
   /** Chain */
   readonly chain: Chain$1;
@@ -44,30 +63,8 @@ declare class PublicBaseClient<T extends keyof PublicBaseClientTransport> {
    */
   private setupChain;
 }
-/** The public client type */
-type PublicBaseClientPublic<T extends keyof PublicBaseClientTransport> = PublicClient<PublicBaseClientTransport[T], Chain$1>;
-/** The provider type */
-interface PublicBaseClientProvider {
-  http: PublicHttpClientProvider;
-  websocket: PublicWebsocketClientProvider;
-}
-/** The transport type */
-interface PublicBaseClientTransport {
-  http: HttpTransport;
-  websocket: WebSocketTransport;
-}
-/** The parameters type */
-interface PublicBaseClientParameters<T extends keyof PublicBaseClientTransport> {
-  chain: number | Chain$1;
-  provider: PublicBaseClientProvider[T];
-  transport: PublicBaseClientTransport[T];
-  clientConfig?: Omit<PublicClientConfig<PublicBaseClientTransport[T], Chain$1>, 'chain' | 'transport'>;
-}
 //#endregion
 //#region src/clients/public-client/client.http.d.ts
-declare class PublicHttpClient extends PublicBaseClient<'http'> {
-  constructor(params: PublicHttpClientParameters);
-}
 interface PublicHttpClientProvider {
   name: string;
   url: `http://${string}` | `https://${string}`;
@@ -78,6 +75,9 @@ interface PublicHttpClientParameters {
   transportConfig?: HttpTransportConfig;
   clientConfig?: Omit<PublicClientConfig<HttpTransport, Chain>, 'chain' | 'transport'>;
   debug?: boolean;
+}
+declare class PublicHttpClient extends PublicBaseClient<'http'> {
+  constructor(params: PublicHttpClientParameters);
 }
 //#endregion
 export { PublicHttpClient, type PublicHttpClientParameters, type PublicHttpClientProvider, PublicWebsocketClient, type PublicWebsocketClientParameters, type PublicWebsocketClientProvider };

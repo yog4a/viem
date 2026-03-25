@@ -11,11 +11,6 @@ import ethGetTransactionByHash from './eth/ethGetTransactionByHash.js';
 import ethGetTransactionReceipt from './eth/ethGetTransactionReceipt.js';
 import ethBlockNumber from './eth/ethBlockNumber.js';
 
-// RPC Calls (Debug)
-import debugTraceTransaction from './debug/debugTraceTransaction.js';
-import debugTraceBlockByHash from './debug/debugTraceBlockByHash.js';
-import debugTraceBlockByNumber from './debug/debugTraceBlockByNumber.js';
-
 // RPC Calls (Trace)
 import traceFilter from './trace/traceFilter.js';
 
@@ -34,10 +29,6 @@ export function setupCustomRpcCalls(client: PublicClient) {
         ethGetBlockReceipts: ethGetBlockReceipts(client),
         ethGetTransactionByHash: ethGetTransactionByHash(client),
         ethGetTransactionReceipt: ethGetTransactionReceipt(client),
-        // Debug
-        debugTraceBlockByNumber: debugTraceBlockByNumber(client),
-        debugTraceBlockByHash: debugTraceBlockByHash(client),
-        debugTraceTransaction: debugTraceTransaction(client),
         // Trace
         traceFilter: traceFilter(client),
     };

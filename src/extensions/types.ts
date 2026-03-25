@@ -9,19 +9,7 @@ export type { EthBlockReceipts } from './eth/ethGetBlockReceipts.js';
 export type { EthTransaction } from './eth/ethGetTransactionByHash.js';
 export type { EthTransactionReceipt } from './eth/ethGetTransactionReceipt.js';
 
-// Types
-export type { DebugTraceBlockHash } from './debug/debugTraceBlockByHash.js';
-export type { DebugTraceBlockNumber } from './debug/debugTraceBlockByNumber.js';
-export type { DebugTraceTransaction } from './debug/debugTraceTransaction.js';
 
-// Additional
-export {  
-  DebugCallType, 
-  type DebugCall,
-  type DebugTraceCall, 
-  type DebugTraceCallOptions, 
-  type TracingOptions 
-} from './debug/types/RpcDebugTrace.js';
 export { 
   type TraceFilterResult,
   type TraceFilterParams,

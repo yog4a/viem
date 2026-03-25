@@ -2,6 +2,32 @@ import { http, type PublicClientConfig, type HttpTransport, type HttpTransportCo
 import { PublicBaseClient } from './client.base.js';
 
 // ===========================================================
+// Http Client Types
+// ===========================================================
+
+/* The provider config */
+export interface PublicHttpClientProvider {
+    /* The name of the provider */
+    name: string,
+    /* The url of the provider */
+    url: `http://${string}` | `https://${string}`,
+};
+
+/* The parameters for the client */
+export interface PublicHttpClientParameters {
+    /* Chain id or chain object (allow to use new chains) */
+    chain: number | Chain,
+    /* The provider config */
+    provider: PublicHttpClientProvider,
+    /* The transport config */
+    transportConfig?: HttpTransportConfig,
+    /* The client config */
+    clientConfig?: Omit<PublicClientConfig<HttpTransport, Chain>, 'chain' | 'transport'>;
+    /* Whether to enable debug mode */
+    debug?: boolean,
+};
+
+// ===========================================================
 // Http Client Class
 // ===========================================================
 
@@ -28,29 +54,3 @@ export class PublicHttpClient extends PublicBaseClient<'http'> {
         }
     }
 }
-
-// ===========================================================
-// Http Client Types
-// ===========================================================
-
-/* The provider config */
-export interface PublicHttpClientProvider {
-    /* The name of the provider */
-    name: string,
-    /* The url of the provider */
-    url: `http://${string}` | `https://${string}`,
-};
-
-/* The parameters for the client */
-export interface PublicHttpClientParameters {
-    /* Chain id or chain object (allow to use new chains) */
-    chain: number | Chain,
-    /* The provider config */
-    provider: PublicHttpClientProvider,
-    /* The transport config */
-    transportConfig?: HttpTransportConfig,
-    /* The client config */
-    clientConfig?: Omit<PublicClientConfig<HttpTransport, Chain>, 'chain' | 'transport'>;
-    /* Whether to enable debug mode */
-    debug?: boolean,
-};

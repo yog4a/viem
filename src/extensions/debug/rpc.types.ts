@@ -12,13 +12,15 @@ export type TracingOptions =
       /* When set to true, this will only trace the primary (top-level) call and not any sub-calls. */
       onlyTopCall?: boolean;
     };
-  }
-  | {
+  } | {
     tracer: 'prestateTracer';
     tracerConfig?: {
       /* When set to true, this will return the difference between the prestate and the poststate. */
       diffMode?: boolean;
     };
+  } | {
+    tracer?: undefined;
+    tracerConfig?: undefined;
   };
 
 /**
@@ -31,11 +33,11 @@ export type DebugTraceCallOptions = {
   /** [REQUIRED] The address the transaction is directed to */
   to: Address;
   /** The integer of the gas provided for the transaction execution */
-  gas?: Hex | bigint | number;
+  gas?: Quantity;
   /** The integer of the gasPrice used for each paid gas */
-  gasPrice?: Hex | bigint | number;
+  gasPrice?: Quantity;
   /** The integer of the value sent with this transaction */
-  value?: Hex | bigint | number;
+  value?: Quantity;
   /** The hash of the method signature and encoded parameters */
   data?: Hex;
 };

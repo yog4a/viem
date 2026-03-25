@@ -1,16 +1,38 @@
 import type { PublicClient } from 'viem';
+import type { RpcDebugSchema } from './rpc.schema.js';
 
-import debugTraceBlockByHash from './debugTraceBlockByHash.js';
-import debugTraceBlockByNumber from './debugTraceBlockByNumber.js';
-import debugTraceTransaction from './debugTraceTransaction.js';
+// ===========================================================
+// Types
+// ===========================================================
 
+type RpcDebugMethod = keyof RpcDebugSchema & string;
+
+type RpcDebugParams<TMethod extends RpcDebugMethod> = RpcDebugSchema[TMethod]['Parameters'];
+
+type RpcDebugResult<TMethod extends RpcDebugMethod> = RpcDebugSchema[TMethod]['ReturnType'];
+
+// ===========================================================
+// Factory
+// ===========================================================
+
+function bindSchemaMethod<TMethod extends RpcDebugMethod>(
+    client: PublicClient,
+    method: TMethod,
+): (params: RpcDebugParams<TMethod>) => Promise<RpcDebugResult<TMethod>> {
+    return (params) => 
+        client.request({ method, params } as any) as Promise<RpcDebugResult<TMethod>>;
+}
+
+// ===========================================================
 // Function
 // ===========================================================
 
 export function createDebugRpcCalls(client: PublicClient) {
     return {
-        debugTraceBlockByNumber: debugTraceBlockByNumber(client),
-        debugTraceBlockByHash: debugTraceBlockByHash(client),
-        debugTraceTransaction: debugTraceTransaction(client),
+        debugTraceBlock: bindSchemaMethod(client, 'debug_traceBlock'),
+        debugTraceBlockByNumber: bindSchemaMethod(client, 'debug_traceBlockByNumber'),
+        debugTraceBlockByHash: bindSchemaMethod(client, 'debug_traceBlockByHash'),
+        debugTraceTransaction: bindSchemaMethod(client, 'debug_traceTransaction'),
+        debugTraceCall: bindSchemaMethod(client, 'debug_traceCall'),
     };
 }

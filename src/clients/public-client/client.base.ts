@@ -5,6 +5,37 @@ import { createPublicClient, type PublicClient, type PublicClientConfig, type Ht
 import { chains, type Chain } from '../../constants/chains.js';
 
 // ===========================================================
+// Base Client Types
+// ===========================================================
+
+/** The public client type */
+type PublicBaseClientPublic<T extends keyof PublicBaseClientTransport> =
+    PublicClient<PublicBaseClientTransport[T], Chain>;
+
+/** The provider type */
+interface PublicBaseClientProvider {
+    http: PublicHttpClientProvider;
+    websocket: PublicWebsocketClientProvider;
+}
+
+/** The transport type */
+interface PublicBaseClientTransport {
+    http: HttpTransport;
+    websocket: WebSocketTransport;
+}
+
+/** The parameters type */
+interface PublicBaseClientParameters<T extends keyof PublicBaseClientTransport> {
+    chain: number | Chain;
+    provider: PublicBaseClientProvider[T];
+    transport: PublicBaseClientTransport[T];
+    clientConfig?: Omit<
+        PublicClientConfig<PublicBaseClientTransport[T], Chain>,
+        'chain' | 'transport'
+    >;
+}
+
+// ===========================================================
 // Base Client Class
 // ===========================================================
 
@@ -62,35 +93,4 @@ export class PublicBaseClient<T extends keyof PublicBaseClientTransport> {
         }
         return chain;
     }
-}
-
-// ===========================================================
-// Base Client Types
-// ===========================================================
-
-/** The public client type */
-export type PublicBaseClientPublic<T extends keyof PublicBaseClientTransport> =
-    PublicClient<PublicBaseClientTransport[T], Chain>;
-
-/** The provider type */
-export interface PublicBaseClientProvider {
-    http: PublicHttpClientProvider;
-    websocket: PublicWebsocketClientProvider;
-}
-
-/** The transport type */
-export interface PublicBaseClientTransport {
-    http: HttpTransport;
-    websocket: WebSocketTransport;
-}
-
-/** The parameters type */
-export interface PublicBaseClientParameters<T extends keyof PublicBaseClientTransport> {
-    chain: number | Chain;
-    provider: PublicBaseClientProvider[T];
-    transport: PublicBaseClientTransport[T];
-    clientConfig?: Omit<
-        PublicClientConfig<PublicBaseClientTransport[T], Chain>,
-        'chain' | 'transport'
-    >;
 }
