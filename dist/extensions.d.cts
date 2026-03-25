@@ -24,6 +24,45 @@ declare namespace EthCode {
   };
 }
 //#endregion
+//#region src/extensions/eth/ethGetLogs.d.ts
+type Schema = {
+  Method: "eth_getLogs";
+  Parameters: [{
+    address: `0x${string}`;
+    fromBlock: `0x${string}` | 'latest' | 'earliest' | 'pending' | 'finalized' | 'safe';
+    toBlock: `0x${string}` | 'latest' | 'earliest' | 'pending' | 'finalized' | 'safe';
+    topics?: `0x${string}`[];
+  }];
+  ReturnType: Array<{
+    address: `0x${string}`;
+    topics: `0x${string}`[];
+    data: `0x${string}`;
+    blockNumber: `0x${string}`;
+    transactionHash: `0x${string}`;
+    transactionIndex: `0x${string}`;
+    blockHash: `0x${string}`;
+    logIndex: `0x${string}`;
+    removed: boolean;
+  }>;
+};
+declare namespace EthGetLogs {
+  const method = "eth_getLogs";
+  type Params = Schema['Parameters'][0];
+  type Result = Schema['ReturnType'];
+}
+//#endregion
+//#region src/extensions/eth/ethGetStorageAt.d.ts
+declare namespace EthGetStorageAt {
+  type Params = {
+    address: `0x${string}`;
+    position: `0x${string}`;
+    blockNumber: `0x${string}` | 'latest' | 'earliest' | 'pending' | 'finalized' | 'safe';
+  };
+  type Result = {
+    storage: `0x${string}`;
+  };
+}
+//#endregion
 //#region src/extensions/eth/ethGetBalance.d.ts
 declare namespace EthBalance {
   type Params = {
@@ -39,18 +78,6 @@ declare namespace EthBalance {
       symbol: string;
       decimals: number;
     };
-  };
-}
-//#endregion
-//#region src/extensions/eth/ethGetStorageAt.d.ts
-declare namespace EthGetStorageAt {
-  type Params = {
-    address: `0x${string}`;
-    position: `0x${string}`;
-    blockNumber: `0x${string}` | 'latest' | 'earliest' | 'pending' | 'finalized' | 'safe';
-  };
-  type Result = {
-    storage: `0x${string}`;
   };
 }
 //#endregion
@@ -96,33 +123,6 @@ declare namespace EthTransactionReceipt {
     hash: `0x${string}`;
     transaction: RpcTransactionReceipt;
   };
-}
-//#endregion
-//#region src/extensions/eth/ethGetLogs.d.ts
-type Schema = {
-  Method: "eth_getLogs";
-  Parameters: [{
-    address: `0x${string}`;
-    fromBlock: `0x${string}` | 'latest' | 'earliest' | 'pending' | 'finalized' | 'safe';
-    toBlock: `0x${string}` | 'latest' | 'earliest' | 'pending' | 'finalized' | 'safe';
-    topics?: `0x${string}`[];
-  }];
-  ReturnType: Array<{
-    address: `0x${string}`;
-    topics: `0x${string}`[];
-    data: `0x${string}`;
-    blockNumber: `0x${string}`;
-    transactionHash: `0x${string}`;
-    transactionIndex: `0x${string}`;
-    blockHash: `0x${string}`;
-    logIndex: `0x${string}`;
-    removed: boolean;
-  }>;
-};
-declare namespace EthGetLogs {
-  const method = "eth_getLogs";
-  type Params = Schema['Parameters'][0];
-  type Result = Schema['ReturnType'];
 }
 //#endregion
 //#region src/extensions/trace/types/traceFilter.types.d.ts
@@ -206,38 +206,6 @@ declare enum TraceCallType {
   CallCode = "callcode"
 }
 //#endregion
-//#region src/extensions/types.d.ts
-type BlockReference = `0x${string}` | "earliest" | "latest" | "pending" | "safe" | "finalized";
-//#endregion
-//#region src/extensions/index.d.ts
-declare function setupCustomRpcCalls(client: PublicClient): {
-  ethBlockNumber: (params: []) => Promise<EthBlockNumber.Result>;
-  ethGetCode: (params: EthCode.Params) => Promise<EthCode.Result>;
-  ethGetLogs: (params: {
-    address: `0x${string}`;
-    fromBlock: `0x${string}` | "latest" | "earliest" | "pending" | "finalized" | "safe";
-    toBlock: `0x${string}` | "latest" | "earliest" | "pending" | "finalized" | "safe";
-    topics?: `0x${string}`[];
-  }) => Promise<{
-    address: `0x${string}`;
-    topics: `0x${string}`[];
-    data: `0x${string}`;
-    blockNumber: `0x${string}`;
-    transactionHash: `0x${string}`;
-    transactionIndex: `0x${string}`;
-    blockHash: `0x${string}`;
-    logIndex: `0x${string}`;
-    removed: boolean;
-  }[]>;
-  ethGetBalance: (params: EthBalance.Params) => Promise<EthBalance.Result>;
-  ethGetStorageAt: (params: EthGetStorageAt.Params) => Promise<EthGetStorageAt.Result>;
-  ethGetBlockByNumber: (params: EthGetBlockByNumber.Params) => Promise<EthGetBlockByNumber.Result>;
-  ethGetBlockReceipts: (params: EthBlockReceipts.Params) => Promise<EthBlockReceipts.Result>;
-  ethGetTransactionByHash: (params: EthTransaction.Params) => Promise<EthTransaction.Result>;
-  ethGetTransactionReceipt: (params: EthTransactionReceipt.Params) => Promise<EthTransactionReceipt.Result>;
-  traceFilter: (params: TraceFilterParams) => Promise<TraceFilterResult>;
-};
-//#endregion
 //#region src/extensions/debug/rpc.types.d.ts
 type TracingOptions = {
   tracer: 'callTracer';
@@ -319,8 +287,72 @@ type DebugTraceCall = {
   }>;
 };
 //#endregion
+//#region src/extensions/types.d.ts
+type BlockReference = `0x${string}` | "earliest" | "latest" | "pending" | "safe" | "finalized";
+//#endregion
+//#region src/extensions/index.d.ts
+declare function setupCustomRpcCalls(client: PublicClient): {
+  debugTraceBlock: (params: [block: `0x${string}`, tracingOptions: TracingOptions]) => Promise<DebugCall[]>;
+  debugTraceBlockByNumber: (params: [blockNumber: `0x${string}` | viem.BlockTag, tracingOptions: TracingOptions]) => Promise<(DebugCall | DebugTrace)[]>;
+  debugTraceBlockByHash: (params: [blockHash: `0x${string}`, tracingOptions: TracingOptions]) => Promise<(DebugCall | DebugTrace)[]>;
+  debugTraceTransaction: (params: [transactionHash: `0x${string}`, tracingOptions: TracingOptions]) => Promise<DebugCall>;
+  debugTraceCall: (params: [call: DebugTraceCallOptions, blockReference: `0x${string}` | viem.BlockTag, tracerObject: TracingOptions]) => Promise<DebugTraceCall>;
+  ethBlockNumber: (params: []) => Promise<EthBlockNumber.Result>;
+  ethGetCode: (params: EthCode.Params) => Promise<EthCode.Result>;
+  ethGetLogs: (params: {
+    address: `0x${string}`;
+    fromBlock: `0x${string}` | "latest" | "earliest" | "pending" | "finalized" | "safe";
+    toBlock: `0x${string}` | "latest" | "earliest" | "pending" | "finalized" | "safe";
+    topics?: `0x${string}`[];
+  }) => Promise<{
+    address: `0x${string}`;
+    topics: `0x${string}`[];
+    data: `0x${string}`;
+    blockNumber: `0x${string}`;
+    transactionHash: `0x${string}`;
+    transactionIndex: `0x${string}`;
+    blockHash: `0x${string}`;
+    logIndex: `0x${string}`;
+    removed: boolean;
+  }[]>;
+  ethGetBalance: (params: EthBalance.Params) => Promise<EthBalance.Result>;
+  ethGetStorageAt: (params: EthGetStorageAt.Params) => Promise<EthGetStorageAt.Result>;
+  ethGetBlockByNumber: (params: EthGetBlockByNumber.Params) => Promise<EthGetBlockByNumber.Result>;
+  ethGetBlockReceipts: (params: EthBlockReceipts.Params) => Promise<EthBlockReceipts.Result>;
+  ethGetTransactionByHash: (params: EthTransaction.Params) => Promise<EthTransaction.Result>;
+  ethGetTransactionReceipt: (params: EthTransactionReceipt.Params) => Promise<EthTransactionReceipt.Result>;
+};
+//#endregion
+//#region src/extensions/eth/index.d.ts
+declare function setupEthRpcCalls(client: PublicClient): {
+  ethBlockNumber: (params: []) => Promise<EthBlockNumber.Result>;
+  ethGetCode: (params: EthCode.Params) => Promise<EthCode.Result>;
+  ethGetLogs: (params: {
+    address: `0x${string}`;
+    fromBlock: `0x${string}` | "latest" | "earliest" | "pending" | "finalized" | "safe";
+    toBlock: `0x${string}` | "latest" | "earliest" | "pending" | "finalized" | "safe";
+    topics?: `0x${string}`[];
+  }) => Promise<{
+    address: `0x${string}`;
+    topics: `0x${string}`[];
+    data: `0x${string}`;
+    blockNumber: `0x${string}`;
+    transactionHash: `0x${string}`;
+    transactionIndex: `0x${string}`;
+    blockHash: `0x${string}`;
+    logIndex: `0x${string}`;
+    removed: boolean;
+  }[]>;
+  ethGetBalance: (params: EthBalance.Params) => Promise<EthBalance.Result>;
+  ethGetStorageAt: (params: EthGetStorageAt.Params) => Promise<EthGetStorageAt.Result>;
+  ethGetBlockByNumber: (params: EthGetBlockByNumber.Params) => Promise<EthGetBlockByNumber.Result>;
+  ethGetBlockReceipts: (params: EthBlockReceipts.Params) => Promise<EthBlockReceipts.Result>;
+  ethGetTransactionByHash: (params: EthTransaction.Params) => Promise<EthTransaction.Result>;
+  ethGetTransactionReceipt: (params: EthTransactionReceipt.Params) => Promise<EthTransactionReceipt.Result>;
+};
+//#endregion
 //#region src/extensions/debug/index.d.ts
-declare function createDebugRpcCalls(client: PublicClient): {
+declare function setupDebugRpcCalls(client: PublicClient): {
   debugTraceBlock: (params: [block: `0x${string}`, tracingOptions: TracingOptions]) => Promise<DebugCall[]>;
   debugTraceBlockByNumber: (params: [blockNumber: `0x${string}` | viem.BlockTag, tracingOptions: TracingOptions]) => Promise<(DebugCall | DebugTrace)[]>;
   debugTraceBlockByHash: (params: [blockHash: `0x${string}`, tracingOptions: TracingOptions]) => Promise<(DebugCall | DebugTrace)[]>;
@@ -333,5 +365,5 @@ declare function createTraceRpcCalls(client: PublicClient): {
   traceFilter: (params: TraceFilterParams) => Promise<TraceFilterResult>;
 };
 //#endregion
-export { BlockReference, type EthBalance, type EthBlockNumber, type EthBlockReceipts, type EthCode, type EthGetBlockByNumber, type EthGetLogs, type EthGetStorageAt, type EthTransaction, type EthTransactionReceipt, type SuicideAction, type TraceAction, TraceCallType, type TraceFilterParams, type TraceFilterResult, TraceType, createDebugRpcCalls, createTraceRpcCalls, setupCustomRpcCalls };
+export { BlockReference, DebugCall, DebugCallType, DebugTrace, DebugTraceCall, DebugTraceCallOptions, type EthBalance, type EthBlockNumber, type EthBlockReceipts, type EthCode, type EthGetBlockByNumber, type EthGetLogs, type EthGetStorageAt, type EthTransaction, type EthTransactionReceipt, type SuicideAction, type TraceAction, TraceCallType, type TraceFilterParams, type TraceFilterResult, TraceType, TracingOptions, createTraceRpcCalls, setupCustomRpcCalls, setupDebugRpcCalls, setupEthRpcCalls };
 //# sourceMappingURL=extensions.d.cts.map

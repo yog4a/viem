@@ -27,7 +27,7 @@ function bindSchemaMethod<TMethod extends RpcDebugMethod>(
 // Function
 // ===========================================================
 
-export function createDebugRpcCalls(client: PublicClient) {
+export function setupDebugRpcCalls(client: PublicClient) {
     return {
         debugTraceBlock: bindSchemaMethod(client, 'debug_traceBlock'),
         debugTraceBlockByNumber: bindSchemaMethod(client, 'debug_traceBlockByNumber'),

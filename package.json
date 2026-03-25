@@ -48,7 +48,6 @@
     "./extensions": {
       "import": "./dist/extensions.mjs",
       "require": "./dist/extensions.cjs"
-    },
-    "./package.json": "./package.json"
+    }
   }
 }

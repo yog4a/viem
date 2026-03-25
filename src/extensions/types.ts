@@ -29,3 +29,6 @@ export type BlockReference =
   | "pending"
   | "safe"
   | "finalized";
+
+
+export * from './debug/rpc.types.js';
