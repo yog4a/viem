@@ -23,14 +23,17 @@
     "resolveJsonModule": true,
     "lib": [
       "ES2023"
-    ]
+    ],
+    "paths": {
+      "@src/*": ["./src/*"],
+    }
   },
   "exclude": [
     "node_modules",
-    "dist"
+    "dist",
+    "tests"
   ],
   "include": [
-    "src/**/*",
-    "tests/**/*"
+    "src"
   ]
 }
