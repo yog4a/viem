@@ -1,12 +1,13 @@
-import type { RpcTransactionReceipt, PublicClient } from 'viem';
+import type { RpcTransactionReceipt, PublicClient, Hex, BlockTag } from 'viem';
 
+// ===========================================================
 // Schema
 // ===========================================================
 
 type Schema = {
     Method: "eth_getBlockReceipts";
     Parameters: [
-        blockNumber: `0x${string}`,
+        blockNumber: Hex | BlockTag,
     ];
     ReturnType: RpcTransactionReceipt[];
 };
@@ -14,36 +15,23 @@ type Schema = {
 // Types (external)
 // ===========================================================
 
-export namespace EthBlockReceipts {
-    export type Params = {
-        blockNumber: `0x${string}`;
-    }
-    export type Result = {
-        receipts: Record<`0x${string}`, RpcTransactionReceipt>;
-    };
-}
-
-// Types (local)
-// ===========================================================
-
-type Params = EthBlockReceipts.Params;
-type Result = EthBlockReceipts.Result;
+export type EthGetBlockReceipts = {
+    receipts: Record<`0x${string}`, RpcTransactionReceipt>;
+};
 
 // Function
 // ===========================================================
 
-export default function(client: PublicClient): (params: Params) => Promise<Result> {
+export default function(client: PublicClient) {
     const method = 'eth_getBlockReceipts';
 
-    return async function(params: Params): Promise<Result> {
-        const { blockNumber } = params;
+    return async function(...params: Schema['Parameters']): Promise<EthGetBlockReceipts> {
+        const [blockNumber] = params;
 
         // Fetch the response
         const response = await client.request<Schema>({
             method: method,
-            params: [
-                blockNumber,
-            ],
+            params: params,
         });
 
         // Check if the response is valid
@@ -53,16 +41,17 @@ export default function(client: PublicClient): (params: Params) => Promise<Resul
             );
         }
 
-        const receiptsObject: Record<`0x${string}`, RpcTransactionReceipt> = {};
+        // Result
+        let result: EthGetBlockReceipts['receipts'] = {};
 
         // Build receipts object mapped by transaction hash
         for (const receipt of response) {
             const transactionHash = receipt.transactionHash.toLowerCase() as `0x${string}`;
-            receiptsObject[transactionHash] = receipt;
+            result[transactionHash] = receipt;
         }
 
         return { 
-            receipts: receiptsObject 
+            receipts: result, 
         };
     }
 }

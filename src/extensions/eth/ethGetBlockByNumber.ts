@@ -1,5 +1,6 @@
-import type { RpcTransaction, RpcBlock, PublicClient } from 'viem';
+import type { RpcTransaction, RpcBlock, PublicClient, Hex, BlockTag } from 'viem';
 
+// ===========================================================
 // Schema
 // ===========================================================
 
@@ -9,45 +10,31 @@ type Schema = {
         blockNumber: `0x${string}`,
         includeTransactions: boolean,
     ];
-    ReturnType: RpcBlock<'latest', boolean, RpcTransaction<false>>;
+    ReturnType: RpcBlock;
 };
 
 // Types (external)
 // ===========================================================
 
-export namespace EthGetBlockByNumber {
-    export type Params = {
-        blockNumber: `0x${string}`;
-        includeTransactions?: boolean;
-    };
-    export type Result = {
-        block: Omit<RpcBlock, 'transactions'>;
-        transactions?: Record<`0x${string}`, RpcTransaction<false>>;
-    };
+export type EthGetBlockByNumber = {
+    block: Omit<RpcBlock, 'transactions'>;
+    transactions?: Record<`0x${string}`, RpcTransaction<false>>;
 };
 
-// Types (local)
 // ===========================================================
-
-type Params = EthGetBlockByNumber.Params;
-type Result = EthGetBlockByNumber.Result;
-
 // Function
 // ===========================================================
 
-export default function(client: PublicClient): (params: Params) => Promise<Result> {
+export default function(client: PublicClient) {
     const method = 'eth_getBlockByNumber';
 
-    return async function(params: Params): Promise<Result> {
-        const { blockNumber, includeTransactions = false } = params;
+    return async function(...params: Schema['Parameters']): Promise<EthGetBlockByNumber> {
+        const [blockNumber, includeTransactions] = params;
 
         // Fetch the response
         const response = await client.request<Schema>({
             method: method,
-            params: [
-                blockNumber,
-                includeTransactions,
-            ],
+            params: params,
         });
 
         // Check if the response is valid

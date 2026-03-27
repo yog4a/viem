@@ -1,33 +1,57 @@
-import type { PublicClient } from 'viem';
-import type { RpcDebugSchema } from './rpc.schema.js';
+import type { PublicClient, Hash } from 'viem';
+import type { TracingOptions } from './rpc.types.js';
+import type { DebugCall } from './rpc.types.js';
 
 // ===========================================================
-// Types
+// Schema
 // ===========================================================
 
-const method = 'debug_traceTransaction' as const;
+type Schema = {
+    Method: "debug_traceTransaction";
+    Parameters: [
+        transactionHash: Hash,
+        tracingOptions: TracingOptions,
+    ];
+    ReturnType: DebugCall;
+};
 
-type RpcMethod = typeof method;
+// ===========================================================
+// Types (external)
+// ===========================================================
 
-type RpcParams = RpcDebugSchema[RpcMethod]['Parameters'];
-
-type RpcResult = RpcDebugSchema[RpcMethod]['ReturnType'];
+export type DebugTraceTransaction = {
+    txHash: Hash;
+    result: DebugCall;
+};
 
 // ===========================================================
 // Function
 // ===========================================================
 
-function call(client: PublicClient) {
-    return (...params: RpcParams) =>
-        client.request({ method, params } as any) as Promise<RpcResult>;
+export default function(client: PublicClient) {
+    const method = 'debug_traceTransaction';
+
+    return async function(...params: Schema['Parameters']): Promise<DebugTraceTransaction> {
+        // Fetch the response
+        const response = await client.request<Schema>({
+            method: method,
+            params: params,
+        });
+
+        // Check if the response is valid
+        if (!response) {
+            throw new Error(
+                `No response from ${method} for ${JSON.stringify(params)}`
+            );
+        }
+
+        // Result
+        let result: DebugTraceTransaction['result'] = response;
+
+        // Return the processed data
+        return {
+            txHash: params[0],
+            result: result,
+        };
+    }
 }
-
-// ===========================================================
-// Export
-// ===========================================================
-
-export {
-    call,
-    type RpcParams as DebugTraceTransactionParams,
-    type RpcResult as DebugTraceTransaction,
-};

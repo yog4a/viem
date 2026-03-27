@@ -1,23 +1,61 @@
-import type { PublicClient } from 'viem';
-import type { RpcDebugSchema } from './rpc.schema.js';
+import type { PublicClient, Hash } from 'viem';
+import type { TracingOptions } from './rpc.types.js';
+import type { DebugTrace } from './rpc.types.js';
 
 // ===========================================================
-// Types
+// Schema
 // ===========================================================
 
-const method = 'debug_traceBlockByHash' as const;
+type Schema = {
+    Method: "debug_traceBlockByHash";
+    Parameters: [
+        blockHash: Hash,
+        tracingOptions: TracingOptions,
+    ];
+    ReturnType: Array<DebugTrace>;
+};
 
-type RpcMethod = typeof method;
+// ===========================================================
+// Types (external)
+// ===========================================================
 
-export type DebugTraceBlockByHashParams = RpcDebugSchema[RpcMethod]['Parameters'];
-
-export type DebugTraceBlockByHash = RpcDebugSchema[RpcMethod]['ReturnType'];
+export type DebugTraceBlockByHash = {
+    result: Record<`0x${string}`, DebugTrace>;
+};
 
 // ===========================================================
 // Function
 // ===========================================================
 
-export function call(client: PublicClient) {
-    return (...params: DebugTraceBlockByHashParams) =>
-        client.request({ method, params } as any) as Promise<DebugTraceBlockByHash>;
+export default function(client: PublicClient) {
+    const method = 'debug_traceBlockByHash';
+
+    return async function(...params: Schema['Parameters']): Promise<DebugTraceBlockByHash> {
+        // Fetch the response
+        const response = await client.request<Schema>({
+            method: method,
+            params: params,
+        });
+
+        // Check if the response is valid
+        if (!response) {
+            throw new Error(
+                `No response from ${method} for ${JSON.stringify(params)}`
+            );
+        }
+
+        // Result
+        let result: DebugTraceBlockByHash['result'] = {};
+
+        // Map traces by transaction hash
+        for (const current of response) {
+            const transactionHash = current.txHash.toLowerCase() as `0x${string}`;
+            result[transactionHash] = current;
+        }
+
+        // Return the processed data
+        return {
+            result: result,
+        };
+    }
 }
