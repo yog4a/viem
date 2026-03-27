@@ -65,7 +65,7 @@ type DebugCall = {
 /**
  * @description Returns the tracing result by executing an eth_call within the context of the given block execution.
  */
-type DebugTraceCall = {
+type DebugTraceCall$1 = {
   /** Whether the transaction failed (true) or was successful (false) */failed: boolean; /** The total gas consumed in the transaction */
   gas: bigint | number; /** The return value of the executed contract call */
   returnValue: Hex; /** The trace result of each step */
@@ -251,39 +251,39 @@ type RpcDebugSchema = {
   debug_traceCall: {
     Method: "debug_traceCall";
     Parameters: [call: DebugTraceCallOptions, blockReference: Hex | BlockTag, tracerObject: TracingOptions];
-    ReturnType: DebugTraceCall;
+    ReturnType: DebugTraceCall$1;
   };
 };
 //#endregion
 //#region src/extensions/debug/debugTraceBlock.d.ts
 declare const method$4: "debug_traceBlock";
 type RpcMethod$4 = typeof method$4;
-type RpcParams$2 = RpcDebugSchema[RpcMethod$4]['Parameters'];
-type RpcResult = RpcDebugSchema[RpcMethod$4]['ReturnType'];
+type DebugTraceBlockParams = RpcDebugSchema[RpcMethod$4]['Parameters'];
+type DebugTraceBlock = RpcDebugSchema[RpcMethod$4]['ReturnType'];
 //#endregion
 //#region src/extensions/debug/debugTraceBlockByNumber.d.ts
 declare const method$3: "debug_traceBlockByNumber";
 type RpcMethod$3 = typeof method$3;
-type RpcParams$1 = RpcDebugSchema[RpcMethod$3]['Parameters'];
-type RpcResult$2 = RpcDebugSchema[RpcMethod$3]['ReturnType'];
+type DebugTraceBlockByNumberParams = RpcDebugSchema[RpcMethod$3]['Parameters'];
+type DebugTraceBlockByNumber = RpcDebugSchema[RpcMethod$3]['ReturnType'];
 //#endregion
 //#region src/extensions/debug/debugTraceBlockByHash.d.ts
 declare const method$2: "debug_traceBlockByHash";
 type RpcMethod$2 = typeof method$2;
-type RpcParams = RpcDebugSchema[RpcMethod$2]['Parameters'];
-type RpcResult$1 = RpcDebugSchema[RpcMethod$2]['ReturnType'];
+type DebugTraceBlockByHashParams = RpcDebugSchema[RpcMethod$2]['Parameters'];
+type DebugTraceBlockByHash = RpcDebugSchema[RpcMethod$2]['ReturnType'];
 //#endregion
 //#region src/extensions/debug/debugTraceTransaction.d.ts
 declare const method$1: "debug_traceTransaction";
 type RpcMethod$1 = typeof method$1;
-type RpcParams$4 = RpcDebugSchema[RpcMethod$1]['Parameters'];
-type RpcResult$4 = RpcDebugSchema[RpcMethod$1]['ReturnType'];
+type RpcParams = RpcDebugSchema[RpcMethod$1]['Parameters'];
+type RpcResult = RpcDebugSchema[RpcMethod$1]['ReturnType'];
 //#endregion
 //#region src/extensions/debug/debugTraceCall.d.ts
 declare const method: "debug_traceCall";
 type RpcMethod = typeof method;
-type RpcParams$3 = RpcDebugSchema[RpcMethod]['Parameters'];
-type RpcResult$3 = RpcDebugSchema[RpcMethod]['ReturnType'];
+type DebugTraceCallParams = RpcDebugSchema[RpcMethod]['Parameters'];
+type DebugTraceCall = RpcDebugSchema[RpcMethod]['ReturnType'];
 //#endregion
 //#region src/extensions/trace/types/traceFilter.types.d.ts
 /**
@@ -371,11 +371,11 @@ type BlockReference = `0x${string}` | "earliest" | "latest" | "pending" | "safe"
 //#endregion
 //#region src/extensions/index.d.ts
 declare function setupCustomRpcCalls(client: PublicClient): {
-  debugTraceBlock: (params: [block: `0x${string}`, tracingOptions: TracingOptions]) => Promise<DebugCall[]>;
-  debugTraceBlockByNumber: (params: [blockNumber: `0x${string}` | viem.BlockTag, tracingOptions: TracingOptions]) => Promise<(DebugCall | DebugTrace)[]>;
-  debugTraceBlockByHash: (params: [blockHash: `0x${string}`, tracingOptions: TracingOptions]) => Promise<(DebugCall | DebugTrace)[]>;
-  debugTraceTransaction: (params: [transactionHash: `0x${string}`, tracingOptions: TracingOptions]) => Promise<DebugCall>;
-  debugTraceCall: (params: [call: DebugTraceCallOptions, blockReference: `0x${string}` | viem.BlockTag, tracerObject: TracingOptions]) => Promise<DebugTraceCall>;
+  debugTraceBlock: (block: `0x${string}`, tracingOptions: TracingOptions) => Promise<DebugTraceBlock>;
+  debugTraceBlockByNumber: (blockNumber: `0x${string}` | viem.BlockTag, tracingOptions: TracingOptions) => Promise<DebugTraceBlockByNumber>;
+  debugTraceBlockByHash: (blockHash: `0x${string}`, tracingOptions: TracingOptions) => Promise<DebugTraceBlockByHash>;
+  debugTraceTransaction: (transactionHash: `0x${string}`, tracingOptions: TracingOptions) => Promise<RpcResult>;
+  debugTraceCall: (call: DebugTraceCallOptions, blockReference: `0x${string}` | viem.BlockTag, tracerObject: TracingOptions) => Promise<DebugTraceCall>;
   ethBlockNumber: (params: []) => Promise<EthBlockNumber.Result>;
   ethGetCode: (params: EthCode.Params) => Promise<EthCode.Result>;
   ethGetLogs: (params: {
@@ -432,11 +432,11 @@ declare function setupEthRpcCalls(client: PublicClient): {
 //#endregion
 //#region src/extensions/debug/index.d.ts
 declare function setupDebugRpcCalls(client: PublicClient): {
-  debugTraceBlock: (params: [block: `0x${string}`, tracingOptions: TracingOptions]) => Promise<DebugCall[]>;
-  debugTraceBlockByNumber: (params: [blockNumber: `0x${string}` | viem.BlockTag, tracingOptions: TracingOptions]) => Promise<(DebugCall | DebugTrace)[]>;
-  debugTraceBlockByHash: (params: [blockHash: `0x${string}`, tracingOptions: TracingOptions]) => Promise<(DebugCall | DebugTrace)[]>;
-  debugTraceTransaction: (params: [transactionHash: `0x${string}`, tracingOptions: TracingOptions]) => Promise<DebugCall>;
-  debugTraceCall: (params: [call: DebugTraceCallOptions, blockReference: `0x${string}` | viem.BlockTag, tracerObject: TracingOptions]) => Promise<DebugTraceCall>;
+  debugTraceBlock: (block: `0x${string}`, tracingOptions: TracingOptions) => Promise<DebugTraceBlock>;
+  debugTraceBlockByNumber: (blockNumber: `0x${string}` | viem.BlockTag, tracingOptions: TracingOptions) => Promise<DebugTraceBlockByNumber>;
+  debugTraceBlockByHash: (blockHash: `0x${string}`, tracingOptions: TracingOptions) => Promise<DebugTraceBlockByHash>;
+  debugTraceTransaction: (transactionHash: `0x${string}`, tracingOptions: TracingOptions) => Promise<RpcResult>;
+  debugTraceCall: (call: DebugTraceCallOptions, blockReference: `0x${string}` | viem.BlockTag, tracerObject: TracingOptions) => Promise<DebugTraceCall>;
 };
 //#endregion
 //#region src/extensions/trace/index.d.ts
@@ -444,5 +444,5 @@ declare function createTraceRpcCalls(client: PublicClient): {
   traceFilter: (params: TraceFilterParams) => Promise<TraceFilterResult>;
 };
 //#endregion
-export { BlockReference, type RpcResult as DebugTraceBlock, type RpcResult$1 as DebugTraceBlockByHash, type RpcParams as DebugTraceBlockByHashParams, type RpcResult$2 as DebugTraceBlockByNumber, type RpcParams$1 as DebugTraceBlockByNumberParams, type RpcParams$2 as DebugTraceBlockParams, type RpcResult$3 as DebugTraceCall, type RpcParams$3 as DebugTraceCallParams, type RpcResult$4 as DebugTraceTransaction, type RpcParams$4 as DebugTraceTransactionParams, EthBalance, EthBlockNumber, EthBlockReceipts, EthCode, EthGetBlockByNumber, EthGetLogs, EthGetStorageAt, EthTransaction, EthTransactionReceipt, type SuicideAction, type TraceAction, TraceCallType, type TraceFilterParams, type TraceFilterResult, TraceType, createTraceRpcCalls, setupCustomRpcCalls, setupDebugRpcCalls, setupEthRpcCalls };
+export { BlockReference, DebugTraceBlock, DebugTraceBlockByHash, DebugTraceBlockByHashParams, DebugTraceBlockByNumber, DebugTraceBlockByNumberParams, DebugTraceBlockParams, DebugTraceCall, DebugTraceCallParams, type RpcResult as DebugTraceTransaction, type RpcParams as DebugTraceTransactionParams, EthBalance, EthBlockNumber, EthBlockReceipts, EthCode, EthGetBlockByNumber, EthGetLogs, EthGetStorageAt, EthTransaction, EthTransactionReceipt, type SuicideAction, type TraceAction, TraceCallType, type TraceFilterParams, type TraceFilterResult, TraceType, createTraceRpcCalls, setupCustomRpcCalls, setupDebugRpcCalls, setupEthRpcCalls };
 //# sourceMappingURL=extensions.d.cts.map
