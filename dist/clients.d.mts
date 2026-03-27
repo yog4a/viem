@@ -80,5 +80,5 @@ declare class PublicHttpClient extends PublicBaseClient<'http'> {
   constructor(params: PublicHttpClientParameters);
 }
 //#endregion
-export { PublicHttpClient, type PublicHttpClientParameters, type PublicHttpClientProvider, PublicWebsocketClient, type PublicWebsocketClientParameters, type PublicWebsocketClientProvider };
+export { PublicHttpClient, PublicHttpClientParameters, PublicHttpClientProvider, PublicWebsocketClient, PublicWebsocketClientParameters, PublicWebsocketClientProvider };
 //# sourceMappingURL=clients.d.mts.map

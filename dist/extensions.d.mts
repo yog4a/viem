@@ -334,5 +334,5 @@ declare function createTraceRpcCalls(client: PublicClient): {
   traceFilter: (params: TraceFilterParams) => Promise<TraceFilterResult>;
 };
 //#endregion
-export { BlockReference, type DebugTraceBlockByHash, type DebugTraceBlockByNumber, type DebugTraceTransaction, type EthBalance, type EthBlockNumber, type EthCode, type EthGetBlockByNumber, type EthGetBlockReceipts, type EthGetLogs, type EthGetStorageAt, type EthTransaction, type EthTransactionReceipt, type SuicideAction, type TraceAction, TraceCallType, type TraceFilterParams, type TraceFilterResult, TraceType, createTraceRpcCalls, setupCustomRpcCalls, setupDebugRpcCalls, setupEthRpcCalls };
+export { BlockReference, DebugTraceBlockByHash, DebugTraceBlockByNumber, DebugTraceTransaction, EthBalance, EthBlockNumber, EthCode, EthGetBlockByNumber, EthGetBlockReceipts, EthGetLogs, EthGetStorageAt, EthTransaction, EthTransactionReceipt, type SuicideAction, type TraceAction, TraceCallType, type TraceFilterParams, type TraceFilterResult, TraceType, createTraceRpcCalls, setupCustomRpcCalls, setupDebugRpcCalls, setupEthRpcCalls };
 //# sourceMappingURL=extensions.d.mts.map
