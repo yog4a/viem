@@ -1,16 +1,16 @@
 import { PublicClient, RpcBlock, toHex } from 'viem';
-import { HttpClient, WebsocketClient } from 'src/clients/public.js';
+import { PublicHttpClient, PublicWebsocketClient } from '../src/clients/public.js';
+import { BlockReference, DebugTraceCall } from '../src/extensions/types.js';
 import provider from './_provider.js';
-import { BlockReference, TracingOptions, DebugTraceCallOptions } from 'src/clients/public.js';
 
 // Service
 // ===========================================================
 
 export class Viem {
     /* HTTP Client */
-    public static http: HttpClient = this.setupHttpClient();
+    public static http: PublicHttpClient = this.setupHttpClient();
     /* WebSocket Client */
-    public static socket: WebsocketClient = this.setupWebsocketClient();
+    public static socket: PublicWebsocketClient = this.setupWebsocketClient();
 
     // Public
 
@@ -53,25 +53,35 @@ export class Viem {
 
     // Private
 
-    private static setupHttpClient(): HttpClient {
-        return new HttpClient({ 
+    private static setupHttpClient(): PublicHttpClient {
+        return new PublicHttpClient({ 
             chain: 1, 
             provider: {
                 name: provider.name,
                 url: provider.endpoints.ethereum.http as `https://${string}`,
-                type: provider.endpoints.ethereum.type as 'debug' | 'trace',
+            },
+            clientConfig: {
+                batch: undefined,
+            },
+            transportConfig: {
+                batch: false,
+                retryCount: 2,
+                retryDelay: 150,
+                timeout: 10_000,
             },
             debug: true,
         });
     }
 
-    private static setupWebsocketClient(): WebsocketClient {
-        return new WebsocketClient({ 
+    private static setupWebsocketClient(): PublicWebsocketClient {
+        return new PublicWebsocketClient({ 
             chain: 1, 
             provider: {
                 name: provider.name,
                 url: provider.endpoints.ethereum.wss as `wss://${string}`,
-                type: provider.endpoints.ethereum.type as 'debug' | 'trace',
+            },
+            clientConfig: {
+                batch: undefined,
             },
             transportConfig: {
                 // Avoid auto-reconnect because we handle it manually

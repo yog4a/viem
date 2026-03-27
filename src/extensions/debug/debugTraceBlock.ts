@@ -9,25 +9,15 @@ const method = 'debug_traceBlock' as const;
 
 type RpcMethod = typeof method;
 
-type RpcParams = RpcDebugSchema[RpcMethod]['Parameters'];
+export type DebugTraceBlockParams = RpcDebugSchema[RpcMethod]['Parameters'];
 
-type RpcResult = RpcDebugSchema[RpcMethod]['ReturnType'];
+export type DebugTraceBlock = RpcDebugSchema[RpcMethod]['ReturnType'];
 
 // ===========================================================
 // Function
 // ===========================================================
 
-function call(client: PublicClient) {
-    return (params: RpcParams) =>
-        client.request({ method, params } as any) as Promise<RpcResult>;
+export function call(client: PublicClient) {
+    return (...params: DebugTraceBlockParams) =>
+        client.request({ method, params } as any) as Promise<DebugTraceBlock>;
 }
-
-// ===========================================================
-// Export
-// ===========================================================
-
-export {
-    call,
-    type RpcParams as DebugTraceBlockParams,
-    type RpcResult as DebugTraceBlock,
-};

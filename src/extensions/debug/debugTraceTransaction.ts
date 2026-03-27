@@ -18,7 +18,7 @@ type RpcResult = RpcDebugSchema[RpcMethod]['ReturnType'];
 // ===========================================================
 
 function call(client: PublicClient) {
-    return (params: RpcParams) =>
+    return (...params: RpcParams) =>
         client.request({ method, params } as any) as Promise<RpcResult>;
 }
 
