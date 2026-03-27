@@ -1,13 +1,6 @@
 // Types (Eth)
-export type { EthBlockNumber } from './eth/ethBlockNumber.js';
-export type { EthCode } from './eth/ethGetCode.js';
-export type { EthGetLogs } from './eth/ethGetLogs.js';
-export type { EthGetStorageAt } from './eth/ethGetStorageAt.js';
-export type { EthBalance } from './eth/ethGetBalance.js';
-export type { EthGetBlockByNumber } from './eth/ethGetBlockByNumber.js';
-export type { EthBlockReceipts } from './eth/ethGetBlockReceipts.js';
-export type { EthTransaction } from './eth/ethGetTransactionByHash.js';
-export type { EthTransactionReceipt } from './eth/ethGetTransactionReceipt.js';
+export * from './eth/types.js';
+export * from './debug/types.js';
 
 
 export { 
@@ -29,6 +22,3 @@ export type BlockReference =
   | "pending"
   | "safe"
   | "finalized";
-
-
-export * from './debug/rpc.types.js';
