@@ -1,56 +1,7 @@
 import { t as __name } from "./chunk-cy2TeOE5.cjs";
 import * as viem from "viem";
-import { Address, Hash, Hex, PublicClient, RpcBlock, RpcTransaction, RpcTransactionReceipt } from "viem";
+import { Address, Hash, Hex, PublicClient, Quantity, RpcBlock, RpcTransaction, RpcTransactionReceipt } from "viem";
 
-//#region src/extensions/debug/rpc.types.d.ts
-type TracingOptions = {
-  tracer: 'callTracer';
-  tracerConfig?: {
-    onlyTopCall?: boolean;
-  };
-} | {
-  tracer: 'prestateTracer';
-  tracerConfig?: {
-    diffMode?: boolean;
-  };
-} | {
-  tracer?: undefined;
-  tracerConfig?: undefined;
-};
-/** Result type for geth style transaction trace. */
-type DebugTrace = {
-  /** Transaction hash. */txHash: Hash; /** Trace results produced by the tracer.  */
-  result: DebugCall;
-};
-/** The type of the call. */
-declare enum DebugCallType {
-  CALL = "CALL",
-  CALLCODE = "CALLCODE",
-  CREATE = "CREATE",
-  CREATE2 = "CREATE2",
-  DELEGATECALL = "DELEGATECALL",
-  STATICCALL = "STATICCALL",
-  SELFDESTRUCT = "SELFDESTRUCT",
-  SUICIDE = "SUICIDE"
-}
-/**
-* The response object for `debug_traceBlockByNumber` and `debug_traceBlockByHash`
-* with `"tracer": "callTracer"`.
-*/
-type DebugCall = {
-  /** The type of the call. */type: DebugCallType; /** The address of that initiated the call. */
-  from: Address; /** The address of the contract that was called. */
-  to?: Address; /** How much gas was left before the call. */
-  gas: Hex; /** How much gas was used by the call. */
-  gasUsed: Hex; /** Calldata input. */
-  input: Hex; /** Output of the call, if any. */
-  output?: Hex; /** Error message, if any. */
-  error?: string; /** Why this call reverted, if it reverted. */
-  revertReason?: string; /** Recorded child calls. */
-  calls?: DebugCall[]; /** Value transferred. */
-  value?: Hex;
-};
-//#endregion
 //#region src/extensions/eth/ethBlockNumber.d.ts
 declare namespace EthBlockNumber {
   type Params = [];
@@ -162,6 +113,87 @@ declare namespace EthTransactionReceipt {
     transaction: RpcTransactionReceipt;
   };
 }
+//#endregion
+//#region src/extensions/debug/rpc.types.d.ts
+type TracingOptions = {
+  tracer: 'callTracer';
+  tracerConfig?: {
+    onlyTopCall?: boolean;
+  };
+} | {
+  tracer: 'prestateTracer';
+  tracerConfig?: {
+    diffMode?: boolean;
+  };
+} | {
+  tracer?: undefined;
+  tracerConfig?: undefined;
+};
+/**
+ * Transaction call object for debug_traceCall RPC.
+ * Follows the eth_call object input shape with tracing extension.
+ */
+type DebugTraceCallOptions = {
+  /** The address the transaction is sent from */from?: Address; /** [REQUIRED] The address the transaction is directed to */
+  to: Address; /** The integer of the gas provided for the transaction execution */
+  gas?: Quantity; /** The integer of the gasPrice used for each paid gas */
+  gasPrice?: Quantity; /** The integer of the value sent with this transaction */
+  value?: Quantity; /** The hash of the method signature and encoded parameters */
+  data?: Hex;
+};
+/** Result type for geth style transaction trace. */
+type DebugTrace = {
+  /** Transaction hash. */txHash: Hash; /** Trace results produced by the tracer.  */
+  result: DebugCall;
+};
+/** The type of the call. */
+declare enum DebugCallType {
+  CALL = "CALL",
+  CALLCODE = "CALLCODE",
+  CREATE = "CREATE",
+  CREATE2 = "CREATE2",
+  DELEGATECALL = "DELEGATECALL",
+  STATICCALL = "STATICCALL",
+  SELFDESTRUCT = "SELFDESTRUCT",
+  SUICIDE = "SUICIDE"
+}
+/**
+* The response object for `debug_traceBlockByNumber` and `debug_traceBlockByHash`
+* with `"tracer": "callTracer"`.
+*/
+type DebugCall = {
+  /** The type of the call. */type: DebugCallType; /** The address of that initiated the call. */
+  from: Address; /** The address of the contract that was called. */
+  to?: Address; /** How much gas was left before the call. */
+  gas: Hex; /** How much gas was used by the call. */
+  gasUsed: Hex; /** Calldata input. */
+  input: Hex; /** Output of the call, if any. */
+  output?: Hex; /** Error message, if any. */
+  error?: string; /** Why this call reverted, if it reverted. */
+  revertReason?: string; /** Recorded child calls. */
+  calls?: DebugCall[]; /** Value transferred. */
+  value?: Hex;
+};
+/**
+ * @description Returns the tracing result by executing an eth_call within the context of the given block execution.
+ */
+type DebugTraceCall = {
+  /** Whether the transaction failed (true) or was successful (false) */failed: boolean; /** The total gas consumed in the transaction */
+  gas: bigint | number; /** The return value of the executed contract call */
+  returnValue: Hex; /** The trace result of each step */
+  structLogs: Array<{
+    /** The current index in bytecode */pc: number; /** The name of current executing operation */
+    op: string; /** The available gas in the execution */
+    gas: number; /** The gas cost of the operation */
+    gasCost: number; /** The number of levels of calling functions */
+    depth: number; /** The error of the execution, if any */
+    error?: string; /** Current stack */
+    stack?: Array<string>; /** Current memory */
+    memory?: Array<string>; /** Storage mapping */
+    storage?: Record<string, string>; /** Total of current refund value */
+    refund?: number;
+  }>;
+};
 //#endregion
 //#region src/extensions/debug/debugTraceBlockByNumber.d.ts
 type DebugTraceBlockByNumber = {
@@ -334,5 +366,5 @@ declare function createTraceRpcCalls(client: PublicClient): {
   traceFilter: (params: TraceFilterParams) => Promise<TraceFilterResult>;
 };
 //#endregion
-export { BlockReference, DebugTraceBlockByHash, DebugTraceBlockByNumber, DebugTraceTransaction, EthBalance, EthBlockNumber, EthCode, EthGetBlockByNumber, EthGetBlockReceipts, EthGetLogs, EthGetStorageAt, EthTransaction, EthTransactionReceipt, type SuicideAction, type TraceAction, TraceCallType, type TraceFilterParams, type TraceFilterResult, TraceType, createTraceRpcCalls, setupCustomRpcCalls, setupDebugRpcCalls, setupEthRpcCalls };
+export { BlockReference, DebugCall, DebugCallType, DebugTrace, DebugTraceBlockByHash, DebugTraceBlockByNumber, DebugTraceCall, DebugTraceCallOptions, DebugTraceTransaction, EthBalance, EthBlockNumber, EthCode, EthGetBlockByNumber, EthGetBlockReceipts, EthGetLogs, EthGetStorageAt, EthTransaction, EthTransactionReceipt, type SuicideAction, type TraceAction, TraceCallType, type TraceFilterParams, type TraceFilterResult, TraceType, TracingOptions, createTraceRpcCalls, setupCustomRpcCalls, setupDebugRpcCalls, setupEthRpcCalls };
 //# sourceMappingURL=extensions.d.cts.map
