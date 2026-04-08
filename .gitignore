@@ -14,3 +14,7 @@ yarn.lock
 .DS_Store
 
 .github/
+
+# Codex
+AGENTS.md
+.codex/

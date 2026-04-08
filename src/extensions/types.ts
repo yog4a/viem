@@ -1,6 +1,7 @@
 // Types (Eth)
 export * from './eth/types.js';
 export * from './debug/types.js';
+export * from './debug/rpc.types.js';
 
 
 export { 
@@ -9,6 +10,7 @@ export {
   type TraceAction,
   type SuicideAction,
 } from './trace/types/traceFilter.types.js';
+
 export { 
   TraceType,
   TraceCallType,
