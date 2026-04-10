@@ -19,13 +19,13 @@
     "tags": "git push --follow-tags"
   },
   "devDependencies": {
-    "@types/node": "^25.5.0",
-    "tsdown": "^0.21.4",
+    "@types/node": "^25.6.0",
+    "tsdown": "^0.21.7",
     "tsx": "^4.21.0",
-    "typescript": "^5.9.3"
+    "typescript": "^6.0.2"
   },
   "dependencies": {
-    "viem": "^2.47.6"
+    "viem": "^2.47.12"
   },
   "files": [
     "dist",

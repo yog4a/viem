@@ -1,61 +1,38 @@
-import type { PublicClient, Hash } from 'viem';
-import type { TracingOptions } from './rpc.types.js';
-import type { DebugTrace } from './rpc.types.js';
+import type { PublicClient } from 'viem';
+import type { DebugTraceConfig } from "./types/tracer.types.js";
+import type { DebugTraceBlockByHashParams, DebugTraceBlockByHashResponse } from './debugTraceBlockByHash.types.js';
 
 // ===========================================================
 // Schema
 // ===========================================================
 
-type Schema = {
+type Schema<C extends DebugTraceConfig> = {
     Method: "debug_traceBlockByHash";
-    Parameters: [
-        blockHash: Hash,
-        tracingOptions: TracingOptions,
-    ];
-    ReturnType: Array<DebugTrace>;
-};
-
-// ===========================================================
-// Types (external)
-// ===========================================================
-
-export type DebugTraceBlockByHash = {
-    result: Record<`0x${string}`, DebugTrace>;
+    Parameters: DebugTraceBlockByHashParams<C>;
+    ReturnType: DebugTraceBlockByHashResponse<C>;
 };
 
 // ===========================================================
 // Function
 // ===========================================================
 
-export default function(client: PublicClient) {
-    const method = 'debug_traceBlockByHash';
+export default function (client: PublicClient) {
+    const method = "debug_traceBlockByHash";
 
-    return async function(...params: Schema['Parameters']): Promise<DebugTraceBlockByHash> {
-        // Fetch the response
-        const response = await client.request<Schema>({
+    return async function <
+        C extends DebugTraceConfig
+    >(...params: Schema<C>['Parameters']): Promise<Schema<C>['ReturnType']> {
+        const response = await client.request<Schema<C>>({
             method: method,
             params: params,
         });
 
-        // Check if the response is valid
         if (!response) {
             throw new Error(
-                `No response from ${method} for ${JSON.stringify(params)}`
+                `No response from ${method} for ${JSON.stringify(params)}`,
             );
         }
 
-        // Result
-        let result: DebugTraceBlockByHash['result'] = {};
-
-        // Map traces by transaction hash
-        for (const current of response) {
-            const transactionHash = current.txHash.toLowerCase() as `0x${string}`;
-            result[transactionHash] = current;
-        }
-
-        // Return the processed data
-        return {
-            result: result,
-        };
-    }
+        return response;
+    };
 }

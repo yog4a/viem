@@ -1,14 +1,14 @@
 import type { PublicClient } from 'viem';
-import type { TraceFilterParameters, TraceFilterResponse } from './traceFilter.types.js';
+import type { TraceTransactionParameters, TraceTransactionResponse } from './traceTransaction.types.js';
 
 // ===========================================================
 // Schema
 // ===========================================================
 
 type Schema = {
-    Method: "trace_filter";
-    Parameters: TraceFilterParameters;
-    ReturnType: TraceFilterResponse;
+    Method: "trace_transaction";
+    Parameters: TraceTransactionParameters;
+    ReturnType: TraceTransactionResponse;
 };
 
 // ===========================================================
@@ -16,20 +16,20 @@ type Schema = {
 // ===========================================================
 
 export default function(client: PublicClient) {
-    const method = 'trace_filter';
+    const method = 'trace_transaction';
 
     return async function(...params: Schema['Parameters']): Promise<Schema['ReturnType']> {
         const response = await client.request<Schema>({
             method: method,
             params: params,
         });
-
+        
         if (!response) {
             throw new Error(
                 `No response from ${method} for ${JSON.stringify(params)}`
             );
         }
-        
+
         return response;
     }
 }

@@ -1,7 +1,7 @@
 import type { PublicClient } from 'viem';
 
-import debugTraceBlockByNumber from './debugTraceBlockByNumber.js';
 import debugTraceBlockByHash from './debugTraceBlockByHash.js';
+import debugTraceBlockByNumber from './debugTraceBlockByNumber.js';
 import debugTraceTransaction from './debugTraceTransaction.js';
 
 // ===========================================================
@@ -9,9 +9,9 @@ import debugTraceTransaction from './debugTraceTransaction.js';
 // ===========================================================
 
 export function setupDebugRpcCalls(client: PublicClient) {
-    return {
-        debugTraceBlockByNumber: debugTraceBlockByNumber(client),   
+    return { 
         debugTraceBlockByHash: debugTraceBlockByHash(client),
+        debugTraceBlockByNumber: debugTraceBlockByNumber(client),  
         debugTraceTransaction: debugTraceTransaction(client),
     };
 }
