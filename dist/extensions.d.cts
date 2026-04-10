@@ -1,5 +1,5 @@
 import { t as __name } from "./chunk-cy2TeOE5.cjs";
-import * as viem from "viem";
+import * as _$viem from "viem";
 import { Address, Hash, Hex, PublicClient, Quantity, RpcBlock, RpcTransaction, RpcTransactionReceipt } from "viem";
 
 //#region src/extensions/eth/ethBlockNumber.d.ts
@@ -114,192 +114,267 @@ declare namespace EthTransactionReceipt {
   };
 }
 //#endregion
-//#region src/extensions/debug/rpc.types.d.ts
-type TracingOptions = {
-  tracer: 'callTracer';
-  tracerConfig?: {
-    onlyTopCall?: boolean;
-  };
-} | {
-  tracer: 'prestateTracer';
-  tracerConfig?: {
-    diffMode?: boolean;
-  };
-} | {
-  tracer?: undefined;
-  tracerConfig?: undefined;
+//#region src/extensions/debug/types/call.types.d.ts
+type DebugCallType = "CALL" | "CALLCODE" | "STATICCALL" | "DELEGATECALL" | "CREATE" | "CREATE2" | "SELFDESTRUCT" | "SUICIDE";
+type DebugCallFrame = {
+  /** Call type */type: DebugCallType; /** Caller address */
+  from: Address; /** Callee address */
+  to?: Address; /** Value sent */
+  value?: Quantity; /** Gas provided */
+  gas: Quantity; /** Gas used */
+  gasUsed: Quantity; /** Calldata */
+  input: Hex; /** Return data */
+  output?: Hex; /** Error message if reverted */
+  error?: string; /** Revert reason (ABI-encoded) */
+  revertReason?: string; /** Nested calls */
+  calls?: DebugCallFrame[];
 };
+//#endregion
+//#region src/extensions/debug/types/prestate.types.d.ts
+type PrestateAccount = {
+  /** Balance */balance?: Hex; /** Nonce */
+  nonce?: number; /** Code */
+  code?: Hex; /** Storage */
+  storage?: Record<Hex, Hex>;
+};
+type PrestateResult = Record<Address, PrestateAccount>;
+//#endregion
+//#region src/extensions/debug/types/shared.types.d.ts
+/** Block identifier types */
+type DebugBlockTag = Hex | "latest" | "earliest" | "pending";
+//#endregion
+//#region src/extensions/debug/types/structLog.types.d.ts
+type StructLog = {
+  /** Program counter */pc: bigint; /** Opcode to be executed */
+  op: string; /** Remaining gas */
+  gas: bigint; /** Cost for executing op */
+  gasCost: bigint; /** EVM memory. Enabled via enableMemory */
+  memory: Hex | null; /** Size of memory */
+  memSize: number; /** EVM stack. Disabled via disableStack */
+  stack: Hex[] | null; /** Last call's return data. Enabled via enableReturnData */
+  returnData?: Hex | null; /** Storage slots of current contract read/written. Only for SLOAD/SSTORE. Disabled via disableStorage */
+  storage?: Record<Hex, Hex> | null; /** Current call depth */
+  depth: number; /** Refund counter */
+  refund?: bigint; /** Error message if any */
+  error?: string | null;
+};
+type StructLoggerResult = {
+  /** Total gas used */gas: number; /** Whether the call failed */
+  failed: boolean; /** Return value */
+  returnValue: Hex; /** Opcode-level trace */
+  structLogs: StructLog[];
+};
+//#endregion
+//#region src/extensions/debug/types/tracer.types.d.ts
 /**
- * Transaction call object for debug_traceCall RPC.
- * Follows the eth_call object input shape with tracing extension.
+ * No named tracer: Geth uses the default opcode logger.
+ * Opcode logger-specific flags belong here.
  */
-type DebugTraceCallOptions = {
-  /** The address the transaction is sent from */from?: Address; /** [REQUIRED] The address the transaction is directed to */
-  to: Address; /** The integer of the gas provided for the transaction execution */
-  gas?: Quantity; /** The integer of the gasPrice used for each paid gas */
-  gasPrice?: Quantity; /** The integer of the value sent with this transaction */
-  value?: Quantity; /** The hash of the method signature and encoded parameters */
-  data?: Hex;
-};
-/** Result type for geth style transaction trace. */
-type DebugTrace = {
-  /** Transaction hash. */txHash: Hash; /** Trace results produced by the tracer.  */
-  result: DebugCall;
-};
-/** The type of the call. */
-declare enum DebugCallType {
-  CALL = "CALL",
-  CALLCODE = "CALLCODE",
-  CREATE = "CREATE",
-  CREATE2 = "CREATE2",
-  DELEGATECALL = "DELEGATECALL",
-  STATICCALL = "STATICCALL",
-  SELFDESTRUCT = "SELFDESTRUCT",
-  SUICIDE = "SUICIDE"
-}
-/**
-* The response object for `debug_traceBlockByNumber` and `debug_traceBlockByHash`
-* with `"tracer": "callTracer"`.
-*/
-type DebugCall = {
-  /** The type of the call. */type: DebugCallType; /** The address of that initiated the call. */
-  from: Address; /** The address of the contract that was called. */
-  to?: Address; /** How much gas was left before the call. */
-  gas: Hex; /** How much gas was used by the call. */
-  gasUsed: Hex; /** Calldata input. */
-  input: Hex; /** Output of the call, if any. */
-  output?: Hex; /** Error message, if any. */
-  error?: string; /** Why this call reverted, if it reverted. */
-  revertReason?: string; /** Recorded child calls. */
-  calls?: DebugCall[]; /** Value transferred. */
-  value?: Hex;
+type NoTracerConfig = {
+  /** The tracer type */tracer?: undefined; /** The tracer configuration */
+  tracerConfig?: undefined; /** Timeout for the trace, e.g. "5s", "300ms" */
+  timeout?: string; /** Re-execute missing historical state up to this many blocks */
+  reexec?: number; /** Enable memory capture */
+  enableMemory?: boolean; /** Disable stack capture */
+  disableStack?: boolean; /** Disable storage capture */
+  disableStorage?: boolean; /** Enable return data capture */
+  enableReturnData?: boolean; /** Print debug logs during capture */
+  debug?: boolean; /** Limit number of captured opcode steps */
+  limit?: number;
 };
 /**
- * @description Returns the tracing result by executing an eth_call within the context of the given block execution.
+ * The configuration for the "callTracer".
  */
-type DebugTraceCall = {
-  /** Whether the transaction failed (true) or was successful (false) */failed: boolean; /** The total gas consumed in the transaction */
-  gas: bigint | number; /** The return value of the executed contract call */
-  returnValue: Hex; /** The trace result of each step */
-  structLogs: Array<{
-    /** The current index in bytecode */pc: number; /** The name of current executing operation */
-    op: string; /** The available gas in the execution */
-    gas: number; /** The gas cost of the operation */
-    gasCost: number; /** The number of levels of calling functions */
-    depth: number; /** The error of the execution, if any */
-    error?: string; /** Current stack */
-    stack?: Array<string>; /** Current memory */
-    memory?: Array<string>; /** Storage mapping */
-    storage?: Record<string, string>; /** Total of current refund value */
-    refund?: number;
-  }>;
+type CallTracerConfig = {
+  /** The tracer type */tracer: "callTracer"; /** The tracer configuration */
+  tracerConfig?: {
+    /** Only trace the primary (top-level) call and not any sub-calls */onlyTopCall?: boolean;
+  }; /** Timeout for the trace, e.g. "5s", "300ms" */
+  timeout?: string; /** Re-execute missing historical state up to this many blocks */
+  reexec?: number;
 };
-//#endregion
-//#region src/extensions/debug/debugTraceBlockByNumber.d.ts
-type DebugTraceBlockByNumber = {
-  result: Record<`0x${string}`, DebugTrace>;
+/**
+ * The configuration for the "prestateTracer".
+ */
+type PrestateTracerConfig = {
+  /** The tracer type */tracer: "prestateTracer"; /** The tracer configuration */
+  tracerConfig?: {
+    /** Return state diff instead of full prestate */diffMode?: boolean; /** Disable code where supported */
+    disableCode?: boolean; /** Disable storage where supported */
+    disableStorage?: boolean;
+  }; /** Timeout for the trace, e.g. "5s", "300ms" */
+  timeout?: string; /** Re-execute missing historical state up to this many blocks */
+  reexec?: number;
 };
+/** Any supported debug trace config */
+type DebugTraceConfig = NoTracerConfig | CallTracerConfig | PrestateTracerConfig;
+/** Only configs that explicitly use a tracer */
+type DebugNamedTracerConfig = CallTracerConfig | PrestateTracerConfig;
+type DebugTraceResult<C extends DebugTraceConfig = NoTracerConfig> = C extends CallTracerConfig ? DebugCallFrame : C extends PrestateTracerConfig ? PrestateResult : StructLoggerResult;
 //#endregion
-//#region src/extensions/debug/debugTraceBlockByHash.d.ts
-type DebugTraceBlockByHash = {
-  result: Record<`0x${string}`, DebugTrace>;
-};
-//#endregion
-//#region src/extensions/debug/debugTraceTransaction.d.ts
-type DebugTraceTransaction = {
+//#region src/extensions/debug/debugTraceBlockByHash.types.d.ts
+type DebugTraceBlockByHashEntry<C extends DebugTraceConfig = NoTracerConfig> = {
   txHash: Hash;
-  result: DebugCall;
+  result: DebugTraceResult<C>;
 };
+type DebugTraceBlockByHashParams<C extends DebugTraceConfig = NoTracerConfig> = [blockHash: Hash, config?: C];
+type DebugTraceBlockByHashResponse<C extends DebugTraceConfig = NoTracerConfig> = DebugTraceBlockByHashEntry<C>[];
 //#endregion
-//#region src/extensions/trace/types/traceFilter.types.d.ts
-/**
- * The filter object for trace filtering requests.
- */
-type TraceFilterParams = {
-  /** The block number or tag to start from (inclusive). */fromBlock?: Hex | number | string; /** The block number or tag to end at (inclusive). */
-  toBlock?: Hex | number | string; /** Array of sender addresses to filter by. */
-  fromAddress?: Address[]; /** Array of receiver addresses to filter by. */
-  toAddress?: Address[]; /** Offset trace number (for pagination). */
-  after?: number; /** Number of traces to display in a batch. */
-  count?: number;
+//#region src/extensions/debug/debugTraceBlockByNumber.types.d.ts
+type DebugTraceBlockByNumberEntry<C extends DebugTraceConfig = NoTracerConfig> = {
+  txHash: Hash;
+  result: DebugTraceResult<C>;
 };
-/**
- * The result returned from a trace_filter call.
- *
- * - `action` object varies by `type`:
- *   - For `"call"`, `"create"`, `"create2"`, `"reward"`: Standard fields.
- *   - For `"suicide"`: See `SuicideAction`.
- */
-type TraceFilterResult = Array<{
-  action: TraceAction;
-  blockHash: Hash;
-  blockNumber: number;
-  result: TraceResult;
-  subtraces: number;
-  traceAddress: number[];
-  transactionHash: Hash;
-  transactionPosition: number;
-  type: TraceType$1;
-}>;
-type TraceType$1 = "call" | "create" | "create2" | "suicide" | "reward";
-/**
- * For non-suicide types, action includes typical call fields.
- * For `type = "suicide"`, action fields are:
- *  - address: `0x${string}`  (the contract/address being self-destructed)
- *  - balance: Hex-string of the contract's final balance
- *  - refundAddress: Address receiving the refund
- */
-type TraceAction = {
-  from: Address;
-  callType?: TraceCallType$1;
-  gas: Hex;
-  input: Hex;
-  init?: Hex;
-  to: Address;
-  value: Hex;
-} | SuicideAction;
-/** For type === "suicide" */
-type SuicideAction = {
-  address: Address;
-  balance: Hex;
+type DebugTraceBlockByNumberParams<C extends DebugTraceConfig = NoTracerConfig> = [blockNumber: DebugBlockTag, config?: C];
+type DebugTraceBlockByNumberResponse<C extends DebugTraceConfig = NoTracerConfig> = DebugTraceBlockByNumberEntry<C>[];
+//#endregion
+//#region src/extensions/debug/debugTraceTransaction.types.d.ts
+type DebugTraceTransactionParams<C extends DebugTraceConfig = NoTracerConfig> = [transactionHash: Hash, config?: C];
+type DebugTraceTransactionResponse<C extends DebugTraceConfig = NoTracerConfig> = DebugTraceResult<C>;
+//#endregion
+//#region src/extensions/trace/types/shared.types.d.ts
+/** Default block parameter supported by trace methods */
+type TraceBlockTag = Hex | "latest" | "earliest" | "pending";
+/** The type of call */
+type TraceCallType = 'call' | 'callcode' | 'staticcall' | 'delegatecall';
+/** The type of create */
+type TraceCreateType = 'create' | 'create2';
+/** The type of destruct */
+type TraceDestructType = 'suicide' | 'selfdestruct';
+/** The type of reward */
+type TraceRewardType = 'block' | 'uncle';
+//#endregion
+//#region src/extensions/trace/types/actions.types.d.ts
+type TraceCallAction = {
+  /** The address of the account that initiated the call */from: Address; /** The type of call */
+  callType: TraceCallType; /** The amount of gas provided for the call */
+  gas: Quantity; /** The input data of the call */
+  input: Hex; /** The address of the contract that was called */
+  to: Address; /** The amount of value sent with the call */
+  value: Quantity;
+};
+type TraceCreateAction = {
+  /** The address of the account that initiated the creation */from: Address; /** The amount of gas provided for the creation */
+  gas: Quantity; /** The code of the created contract */
+  init: Hex; /** The amount of value sent with the creation */
+  value: Quantity;
+};
+type TraceSuicideAction = {
+  /** The contract/address being self-destructed */address: Address; /** The contract's remaining balance */
+  balance: Quantity; /** The address receiving funds */
   refundAddress: Address;
 };
-type TraceResult = {
-  gasUsed?: Hex;
-  output?: Hex;
-  code?: Hex;
+type TraceRewardAction = {
+  /** The address of the author of the block */author: Address; /** The type of reward */
+  rewardType: TraceRewardType; /** The amount of reward */
+  value: Quantity;
 };
-type TraceCallType$1 = "call" | "delegatecall" | "staticcall" | "callcode";
 //#endregion
-//#region src/extensions/trace/types/enums.d.ts
-/**
- * Trace types returned by OpenEthereum / Erigon trace APIs.
- */
-declare enum TraceType {
-  Call = "call",
-  Create = "create",
-  Create2 = "create2",
-  Suicide = "suicide",
-  Reward = "reward"
+//#region src/extensions/trace/types/results.types.d.ts
+type TraceCallResult = {
+  /** The amount of gas used by the call */gasUsed: Quantity; /** The output data of the call */
+  output: "0x" | Hex;
+};
+type TraceCreateResult = {
+  /** The address of the created contract */address: Address; /** The code of the created contract */
+  code: Hex; /** The amount of gas used by the created contract */
+  gasUsed: Quantity;
+};
+//#endregion
+//#region src/extensions/trace/types/entries.types.d.ts
+interface TraceEntryBase {
+  /** The number of subtraces */
+  subtraces: number;
+  /** The trace address */
+  traceAddress: number[];
 }
-/**
- * Trace call types returned by OpenEthereum / Erigon trace APIs.
- */
-declare enum TraceCallType {
-  Call = "call",
-  DelegateCall = "delegatecall",
-  StaticCall = "staticcall",
-  CallCode = "callcode"
+interface TraceEntryBlockBase extends TraceEntryBase {
+  /** The hash of the block */
+  blockHash: Hash;
+  /** The number of the block */
+  blockNumber: number;
+}
+interface TraceEntryTxBase extends TraceEntryBlockBase {
+  /** The hash of the transaction */
+  transactionHash: Hash;
+  /** The position of the transaction in the block */
+  transactionPosition: number;
+}
+interface TraceCallEntry extends TraceEntryTxBase {
+  /** The type of trace */
+  type: "call";
+  /** The action of the trace */
+  action: TraceCallAction;
+  /** The result of the trace (null if OOG/exception hard) */
+  result: TraceCallResult | null;
+  /** The error of the trace (if any) */
+  error?: string;
+}
+interface TraceCreateEntry extends TraceEntryTxBase {
+  /** The type of trace */
+  type: "create" | "create2";
+  /** The action of the trace */
+  action: TraceCreateAction;
+  /** The result of the trace (null if OOG/exception hard) */
+  result: TraceCreateResult | null;
+  /** The error of the trace (if any) */
+  error?: string;
+}
+interface TraceSuicideEntry extends TraceEntryTxBase {
+  /** The type of trace */
+  type: "suicide" | "selfdestruct";
+  /** The action of the trace */
+  action: TraceSuicideAction;
+  /** The result of the trace (null if OOG/exception hard) */
+  result: null;
+}
+interface TraceRewardEntry extends TraceEntryBlockBase {
+  /** The type of trace */
+  type: "reward";
+  /** The action of the trace */
+  action: TraceRewardAction;
+  /** The result of the trace (null if OOG/exception hard) */
+  result: null;
+  /** Reward traces are not tied to a transaction */
+  transactionHash: null;
+  /** Reward traces are not tied to a transaction */
+  transactionPosition: null;
 }
 //#endregion
-//#region src/extensions/types.d.ts
-type BlockReference = `0x${string}` | "earliest" | "latest" | "pending" | "safe" | "finalized";
+//#region src/extensions/trace/traceBlock.types.d.ts
+type TraceBlockParameters = [block: TraceBlockTag];
+type TraceBlockResponse = (TraceCallEntry | TraceCreateEntry | TraceSuicideEntry | TraceRewardEntry)[];
+//#endregion
+//#region src/extensions/trace/traceFilter.types.d.ts
+interface TraceFilterOptions {
+  /** Start block (inclusive) */
+  fromBlock?: TraceBlockTag;
+  /** End block (inclusive) */
+  toBlock?: TraceBlockTag;
+  /** Filter by sender addresses */
+  fromAddress?: Address[];
+  /** Filter by destination addresses */
+  toAddress?: Address[];
+  /** Pagination offset */
+  after?: number;
+  /** Maximum number of traces to return */
+  count?: number;
+}
+type TraceFilterParameters = [filter: TraceFilterOptions];
+type TraceFilterResponse = (TraceCallEntry | TraceCreateEntry | TraceSuicideEntry | TraceRewardEntry)[];
+//#endregion
+//#region src/extensions/trace/traceTransaction.types.d.ts
+type TraceTransactionParameters = [transactionHash: Hash];
+type TraceTransactionResponse = (TraceCallEntry | TraceCreateEntry | TraceSuicideEntry)[];
 //#endregion
 //#region src/extensions/index.d.ts
 declare function setupCustomRpcCalls(client: PublicClient): {
-  debugTraceBlockByNumber: (blockNumber: `0x${string}` | viem.BlockTag, tracingOptions: TracingOptions) => Promise<DebugTraceBlockByNumber>;
-  debugTraceBlockByHash: (blockHash: `0x${string}`, tracingOptions: TracingOptions) => Promise<DebugTraceBlockByHash>;
-  debugTraceTransaction: (transactionHash: `0x${string}`, tracingOptions: TracingOptions) => Promise<DebugTraceTransaction>;
+  traceBlock: (block: TraceBlockTag) => Promise<TraceBlockResponse>;
+  traceFilter: (filter: TraceFilterOptions) => Promise<TraceFilterResponse>;
+  traceTransaction: (transactionHash: `0x${string}`) => Promise<TraceTransactionResponse>;
+  debugTraceBlockByHash: <C extends DebugTraceConfig>(blockHash: `0x${string}`, config?: C | undefined) => Promise<DebugTraceBlockByHashResponse<C>>;
+  debugTraceBlockByNumber: <C extends DebugTraceConfig>(blockNumber: DebugBlockTag, config?: C | undefined) => Promise<DebugTraceBlockByNumberResponse<C>>;
+  debugTraceTransaction: <C extends DebugTraceConfig>(transactionHash: `0x${string}`, config?: C | undefined) => Promise<DebugTraceResult<C>>;
   ethBlockNumber: (params: []) => Promise<EthBlockNumber.Result>;
   ethGetCode: (params: EthCode.Params) => Promise<EthCode.Result>;
   ethGetLogs: (params: {
@@ -321,50 +396,10 @@ declare function setupCustomRpcCalls(client: PublicClient): {
   ethGetBalance: (params: EthBalance.Params) => Promise<EthBalance.Result>;
   ethGetStorageAt: (params: EthGetStorageAt.Params) => Promise<EthGetStorageAt.Result>;
   ethGetBlockByNumber: (blockNumber: `0x${string}`, includeTransactions: boolean) => Promise<EthGetBlockByNumber>;
-  ethGetBlockReceipts: (blockNumber: `0x${string}` | viem.BlockTag) => Promise<EthGetBlockReceipts>;
+  ethGetBlockReceipts: (blockNumber: `0x${string}` | _$viem.BlockTag) => Promise<EthGetBlockReceipts>;
   ethGetTransactionByHash: (params: EthTransaction.Params) => Promise<EthTransaction.Result>;
   ethGetTransactionReceipt: (params: EthTransactionReceipt.Params) => Promise<EthTransactionReceipt.Result>;
 };
 //#endregion
-//#region src/extensions/eth/index.d.ts
-declare function setupEthRpcCalls(client: PublicClient): {
-  ethBlockNumber: (params: []) => Promise<EthBlockNumber.Result>;
-  ethGetCode: (params: EthCode.Params) => Promise<EthCode.Result>;
-  ethGetLogs: (params: {
-    address: `0x${string}`;
-    fromBlock: `0x${string}` | "latest" | "earliest" | "pending" | "finalized" | "safe";
-    toBlock: `0x${string}` | "latest" | "earliest" | "pending" | "finalized" | "safe";
-    topics?: `0x${string}`[];
-  }) => Promise<{
-    address: `0x${string}`;
-    topics: `0x${string}`[];
-    data: `0x${string}`;
-    blockNumber: `0x${string}`;
-    transactionHash: `0x${string}`;
-    transactionIndex: `0x${string}`;
-    blockHash: `0x${string}`;
-    logIndex: `0x${string}`;
-    removed: boolean;
-  }[]>;
-  ethGetBalance: (params: EthBalance.Params) => Promise<EthBalance.Result>;
-  ethGetStorageAt: (params: EthGetStorageAt.Params) => Promise<EthGetStorageAt.Result>;
-  ethGetBlockByNumber: (blockNumber: `0x${string}`, includeTransactions: boolean) => Promise<EthGetBlockByNumber>;
-  ethGetBlockReceipts: (blockNumber: `0x${string}` | viem.BlockTag) => Promise<EthGetBlockReceipts>;
-  ethGetTransactionByHash: (params: EthTransaction.Params) => Promise<EthTransaction.Result>;
-  ethGetTransactionReceipt: (params: EthTransactionReceipt.Params) => Promise<EthTransactionReceipt.Result>;
-};
-//#endregion
-//#region src/extensions/debug/index.d.ts
-declare function setupDebugRpcCalls(client: PublicClient): {
-  debugTraceBlockByNumber: (blockNumber: `0x${string}` | viem.BlockTag, tracingOptions: TracingOptions) => Promise<DebugTraceBlockByNumber>;
-  debugTraceBlockByHash: (blockHash: `0x${string}`, tracingOptions: TracingOptions) => Promise<DebugTraceBlockByHash>;
-  debugTraceTransaction: (transactionHash: `0x${string}`, tracingOptions: TracingOptions) => Promise<DebugTraceTransaction>;
-};
-//#endregion
-//#region src/extensions/trace/index.d.ts
-declare function createTraceRpcCalls(client: PublicClient): {
-  traceFilter: (params: TraceFilterParams) => Promise<TraceFilterResult>;
-};
-//#endregion
-export { BlockReference, DebugCall, DebugCallType, DebugTrace, DebugTraceBlockByHash, DebugTraceBlockByNumber, DebugTraceCall, DebugTraceCallOptions, DebugTraceTransaction, EthBalance, EthBlockNumber, EthCode, EthGetBlockByNumber, EthGetBlockReceipts, EthGetLogs, EthGetStorageAt, EthTransaction, EthTransactionReceipt, type SuicideAction, type TraceAction, TraceCallType, type TraceFilterParams, type TraceFilterResult, TraceType, TracingOptions, createTraceRpcCalls, setupCustomRpcCalls, setupDebugRpcCalls, setupEthRpcCalls };
+export { CallTracerConfig, DebugBlockTag, DebugCallFrame, DebugCallType, DebugNamedTracerConfig, DebugTraceBlockByHashEntry, DebugTraceBlockByHashParams, DebugTraceBlockByHashResponse, DebugTraceBlockByNumberEntry, DebugTraceBlockByNumberParams, DebugTraceBlockByNumberResponse, DebugTraceConfig, DebugTraceResult, DebugTraceTransactionParams, DebugTraceTransactionResponse, type EthBalance, type EthBlockNumber, type EthCode, type EthGetBlockByNumber, type EthGetBlockReceipts, type EthGetLogs, type EthGetStorageAt, type EthTransaction, type EthTransactionReceipt, NoTracerConfig, PrestateAccount, PrestateResult, PrestateTracerConfig, StructLog, StructLoggerResult, TraceBlockParameters, TraceBlockResponse, TraceBlockTag, TraceCallAction, TraceCallEntry, TraceCallResult, TraceCallType, TraceCreateAction, TraceCreateEntry, TraceCreateResult, TraceCreateType, TraceDestructType, TraceEntryBlockBase, TraceEntryTxBase, TraceFilterOptions, TraceFilterParameters, TraceFilterResponse, TraceRewardAction, TraceRewardEntry, TraceRewardType, TraceSuicideAction, TraceSuicideEntry, TraceTransactionParameters, TraceTransactionResponse, setupCustomRpcCalls };
 //# sourceMappingURL=extensions.d.cts.map
