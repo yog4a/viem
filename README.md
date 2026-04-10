@@ -22,8 +22,6 @@ This package exposes 4 entry points:
 - `@yog4a/viem/clients` -> custom client classes (public, wallet, test)
 - `@yog4a/viem/extensions` -> custom RPC setup + extension types
 
----
-
 ## 1) Core viem re-export
 
 ```ts
@@ -32,15 +30,11 @@ import { createPublicClient, http } from '@yog4a/viem';
 
 Use it exactly like `viem`, but through your package.
 
----
-
 ## 2) Chains re-export
 
 ```ts
 import { mainnet, sepolia } from '@yog4a/viem/chains';
 ```
-
----
 
 ## 3) Clients
 
@@ -99,8 +93,6 @@ const client = wsClient.client; // viem PublicClient
   - HTTP client: `http://` or `https://`
   - WebSocket client: `ws://` or `wss://`
 
----
-
 ## 4) Extensions (custom RPC calls)
 
 Use `setupCustomRpcCalls(client)` to attach all helper RPC methods to an existing Viem `PublicClient`.
@@ -125,8 +117,6 @@ const tx = await rpc.ethGetTransactionByHash({
   transactionHash: '0x...',
 });
 ```
-
----
 
 ## Available extension methods
 
@@ -156,8 +146,6 @@ const tx = await rpc.ethGetTransactionByHash({
 
 > These methods call `client.request(...)` internally and return typed responses.
 
----
-
 ## Type exports
 
 From `@yog4a/viem/extensions` you also get exported types for:
@@ -167,8 +155,6 @@ From `@yog4a/viem/extensions` you also get exported types for:
 - TRACE action/result structures
 
 So you can type your app code without deep-importing internals.
-
----
 
 ## Full example
 
@@ -196,8 +182,6 @@ async function main() {
 
 main().catch(console.error);
 ```
-
----
 
 ## Notes
 
