@@ -123,8 +123,8 @@ type DebugCallFrame = {
   value?: Quantity; /** Gas provided */
   gas: Quantity; /** Gas used */
   gasUsed: Quantity; /** Calldata */
-  input: Hex; /** Return data */
-  output?: Hex; /** Error message if reverted */
+  input: "0x" | "0x0" | Hex; /** Return data */
+  output?: "0x" | "0x0" | Hex; /** Error message if reverted */
   error?: string; /** Revert reason (ABI-encoded) */
   revertReason?: string; /** Nested calls */
   calls?: DebugCallFrame[];
@@ -246,18 +246,19 @@ type TraceRewardType = 'block' | 'uncle';
 //#endregion
 //#region src/extensions/trace/types/actions.types.d.ts
 type TraceCallAction = {
-  /** The address of the account that initiated the call */from: Address; /** The type of call */
-  callType: TraceCallType; /** The amount of gas provided for the call */
+  /** The type of call */callType: TraceCallType; /** The address of the account that initiated the call */
+  from: Address; /** The address of the contract that was called */
+  to: Address; /** The amount of gas provided for the call */
   gas: Quantity; /** The input data of the call */
-  input: Hex; /** The address of the contract that was called */
-  to: Address; /** The amount of value sent with the call */
+  input: Hex; /** The amount of value sent with the call */
   value: Quantity;
 };
 type TraceCreateAction = {
   /** The address of the account that initiated the creation */from: Address; /** The amount of gas provided for the creation */
   gas: Quantity; /** The code of the created contract */
   init: Hex; /** The amount of value sent with the creation */
-  value: Quantity;
+  value: Quantity; /** The address of the created contract */
+  creationMethod?: "create" | "create2";
 };
 type TraceSuicideAction = {
   /** The contract/address being self-destructed */address: Address; /** The contract's remaining balance */
@@ -335,10 +336,6 @@ interface TraceRewardEntry extends TraceEntryBlockBase {
   action: TraceRewardAction;
   /** The result of the trace (null if OOG/exception hard) */
   result: null;
-  /** Reward traces are not tied to a transaction */
-  transactionHash: null;
-  /** Reward traces are not tied to a transaction */
-  transactionPosition: null;
 }
 //#endregion
 //#region src/extensions/trace/traceBlock.types.d.ts
