@@ -69,8 +69,4 @@ export interface TraceRewardEntry extends TraceEntryBlockBase {
   action: TraceRewardAction;
   /** The result of the trace (null if OOG/exception hard) */
   result: null;
-  /** Reward traces are not tied to a transaction */
-  transactionHash: null;
-  /** Reward traces are not tied to a transaction */
-  transactionPosition: null;
 }

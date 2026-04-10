@@ -6,16 +6,16 @@ import type { TraceCallType, TraceRewardType } from "./shared.types.js";
 // ============================================================================
 
 export type TraceCallAction = {
-  /** The address of the account that initiated the call */
-  from: Address;
   /** The type of call */
   callType: TraceCallType;
+  /** The address of the account that initiated the call */
+  from: Address;
+  /** The address of the contract that was called */
+  to: Address;
   /** The amount of gas provided for the call */
   gas: Quantity;
   /** The input data of the call */
   input: Hex;
-  /** The address of the contract that was called */
-  to: Address;
   /** The amount of value sent with the call */
   value: Quantity;
 }
@@ -29,6 +29,8 @@ export type TraceCreateAction = {
   init: Hex;
   /** The amount of value sent with the creation */
   value: Quantity;
+  /** The address of the created contract */
+  creationMethod?: "create" | "create2";
 }
 
 export type TraceSuicideAction = {

@@ -28,9 +28,9 @@ export type DebugCallFrame = {
   /** Gas used */
   gasUsed: Quantity;
   /** Calldata */
-  input: Hex;
+  input: "0x" | "0x0" | Hex;
   /** Return data */
-  output?: Hex;
+  output?: "0x" | "0x0" | Hex;
   /** Error message if reverted */
   error?: string;
   /** Revert reason (ABI-encoded) */
