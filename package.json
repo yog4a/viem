@@ -16,6 +16,7 @@
     "version:major": "npm version major",
     "update:check": "npx npm-check-updates",
     "update:install": "npx npm-check-updates -u && npm install",
+    "prepare": "npm run build",
     "tags": "git push --follow-tags"
   },
   "devDependencies": {
