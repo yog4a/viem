@@ -1,7 +1,7 @@
 {
   "name": "@yog4a/viem",
   "description": "Personal encapsulation module for viem",
-  "version": "1.1.2",
+  "version": "1.1.3",
   "type": "module",
   "main": "./dist/viem.cjs",
   "module": "./dist/viem.mjs",
