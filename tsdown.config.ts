@@ -2,7 +2,7 @@ import { defineConfig } from 'tsdown'
 
 export default defineConfig({
     entry: [
-        'src/index.ts',
+        'src/viem.ts',
         'src/chains.ts',
         'src/clients.ts',
         'src/extensions.ts',
