@@ -1,6 +1,6 @@
 import { t as __name } from "./chunk-UvegZiLi.mjs";
 import * as _$viem from "viem";
-import { Address, Hash, Hex, PublicClient, Quantity, RpcBlock, RpcTransaction, RpcTransactionReceipt } from "viem";
+import { Address, BlockTag, Hash, Hex, PublicClient, Quantity, RpcBlock, RpcTransaction, RpcTransactionReceipt } from "viem";
 
 //#region src/extensions/eth/ethBlockNumber.d.ts
 declare namespace EthBlockNumber {
@@ -81,16 +81,13 @@ declare namespace EthBalance {
   };
 }
 //#endregion
-//#region src/extensions/eth/ethGetBlockByNumber.d.ts
-type EthGetBlockByNumber = {
-  block: Omit<RpcBlock, 'transactions'>;
-  transactions?: Record<`0x${string}`, RpcTransaction<false>>;
-};
+//#region src/extensions/eth/ethGetBlockByNumber.types.d.ts
+type EthGetBlockByNumberParameters = [blockNumber: `0x${string}`, includeTransactions: boolean];
+type EthGetBlockByNumberResponse = RpcBlock;
 //#endregion
-//#region src/extensions/eth/ethGetBlockReceipts.d.ts
-type EthGetBlockReceipts = {
-  receipts: Record<`0x${string}`, RpcTransactionReceipt>;
-};
+//#region src/extensions/eth/ethGetBlockReceipts.types.d.ts
+type EthGetBlockReceiptsParameters = [blockNumber: Hex | BlockTag];
+type EthGetBlockReceiptsResponse = RpcTransactionReceipt[];
 //#endregion
 //#region src/extensions/eth/ethGetTransactionByHash.d.ts
 declare namespace EthTransaction {
@@ -396,11 +393,11 @@ declare function setupCustomRpcCalls(client: PublicClient): {
   }[]>;
   ethGetBalance: (params: EthBalance.Params) => Promise<EthBalance.Result>;
   ethGetStorageAt: (params: EthGetStorageAt.Params) => Promise<EthGetStorageAt.Result>;
-  ethGetBlockByNumber: (blockNumber: `0x${string}`, includeTransactions: boolean) => Promise<EthGetBlockByNumber>;
-  ethGetBlockReceipts: (blockNumber: `0x${string}` | _$viem.BlockTag) => Promise<EthGetBlockReceipts>;
+  ethGetBlockByNumber: (blockNumber: `0x${string}`, includeTransactions: boolean) => Promise<EthGetBlockByNumberResponse>;
+  ethGetBlockReceipts: (blockNumber: `0x${string}` | _$viem.BlockTag) => Promise<EthGetBlockReceiptsResponse>;
   ethGetTransactionByHash: (params: EthTransaction.Params) => Promise<EthTransaction.Result>;
   ethGetTransactionReceipt: (params: EthTransactionReceipt.Params) => Promise<EthTransactionReceipt.Result>;
 };
 //#endregion
-export { CallTracerConfig, DebugBlockTag, DebugCallFrame, DebugCallLogFrame, DebugCallType, DebugNamedTracerConfig, DebugTraceBlockByHashEntry, DebugTraceBlockByHashParams, DebugTraceBlockByHashResponse, DebugTraceBlockByNumberEntry, DebugTraceBlockByNumberParams, DebugTraceBlockByNumberResponse, DebugTraceConfig, DebugTraceResult, DebugTraceTransactionParams, DebugTraceTransactionResponse, type EthBalance, type EthBlockNumber, type EthCode, type EthGetBlockByNumber, type EthGetBlockReceipts, type EthGetLogs, type EthGetStorageAt, type EthTransaction, type EthTransactionReceipt, NoTracerConfig, PrestateAccount, PrestateResult, PrestateTracerConfig, StructLog, StructLoggerResult, TraceBlockParameters, TraceBlockResponse, TraceBlockTag, TraceCallAction, TraceCallEntry, TraceCallResult, TraceCallType, TraceCreateAction, TraceCreateEntry, TraceCreateResult, TraceCreateType, TraceFilterOptions, TraceFilterParameters, TraceFilterResponse, TraceRewardAction, TraceRewardEntry, TraceRewardType, TraceSuicideAction, TraceSuicideEntry, TraceTransactionParameters, TraceTransactionResponse, setupCustomRpcCalls };
+export { CallTracerConfig, DebugBlockTag, DebugCallFrame, DebugCallLogFrame, DebugCallType, DebugNamedTracerConfig, DebugTraceBlockByHashEntry, DebugTraceBlockByHashParams, DebugTraceBlockByHashResponse, DebugTraceBlockByNumberEntry, DebugTraceBlockByNumberParams, DebugTraceBlockByNumberResponse, DebugTraceConfig, DebugTraceResult, DebugTraceTransactionParams, DebugTraceTransactionResponse, type EthBalance, type EthBlockNumber, type EthCode, type EthGetBlockByNumberParameters, type EthGetBlockByNumberResponse, type EthGetBlockReceiptsParameters, type EthGetBlockReceiptsResponse, type EthGetLogs, type EthGetStorageAt, type EthTransaction, type EthTransactionReceipt, NoTracerConfig, PrestateAccount, PrestateResult, PrestateTracerConfig, StructLog, StructLoggerResult, TraceBlockParameters, TraceBlockResponse, TraceBlockTag, TraceCallAction, TraceCallEntry, TraceCallResult, TraceCallType, TraceCreateAction, TraceCreateEntry, TraceCreateResult, TraceCreateType, TraceFilterOptions, TraceFilterParameters, TraceFilterResponse, TraceRewardAction, TraceRewardEntry, TraceRewardType, TraceSuicideAction, TraceSuicideEntry, TraceTransactionParameters, TraceTransactionResponse, setupCustomRpcCalls };
 //# sourceMappingURL=extensions.d.mts.map
