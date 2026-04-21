@@ -1,6 +1,7 @@
 import * as chainsByName from 'viem/chains';
 import type { Chain } from 'viem/chains';
 
+// ===========================================================
 // Constants
 // ===========================================================
 
@@ -12,6 +13,7 @@ const chains: Record<number, Chain> = (Object.values(chainsByName) as any[])
   }, {} as Record<number, Chain>);
 
 
+// ===========================================================
 // Exports
 // ===========================================================
 

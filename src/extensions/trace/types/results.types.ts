@@ -12,10 +12,10 @@ export type TraceCallResult = {
 }
 
 export type TraceCreateResult = {
+  /** The amount of gas used by the call */
+  gasUsed: Quantity;
   /** The address of the created contract */
   address: Address;
   /** The code of the created contract */
   code: Hex;
-  /** The amount of gas used by the created contract */
-  gasUsed: Quantity;
 }

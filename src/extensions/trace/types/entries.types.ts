@@ -3,24 +3,26 @@ import type { TraceCallAction, TraceCreateAction, TraceSuicideAction, TraceRewar
 import type { TraceCallResult, TraceCreateResult } from "./results.types.js";
 
 // ============================================================================
-// Trace Entry Base Types
+// BASE
 // ============================================================================
 
-interface TraceEntryBase {
+interface TraceEntry {
   /** The number of subtraces */
   subtraces: number;
   /** The trace address */
   traceAddress: number[];
+  /** The error of the trace (if any) */
+  error?: string;
 };
 
-export interface TraceEntryBlockBase extends TraceEntryBase {
+interface TraceBlockEntry extends TraceEntry {
   /** The hash of the block */
   blockHash: Hash;
   /** The number of the block */
   blockNumber: number;
 };
 
-export interface TraceEntryTxBase extends TraceEntryBlockBase {
+interface TraceTxEntry extends TraceBlockEntry {
   /** The hash of the transaction */
   transactionHash: Hash;
   /** The position of the transaction in the block */
@@ -28,45 +30,41 @@ export interface TraceEntryTxBase extends TraceEntryBlockBase {
 };
 
 // ============================================================================
-// ENTRIES (discriminated union on `type`)
+// ENTRIES
 // ============================================================================
 
-export interface TraceCallEntry extends TraceEntryTxBase {
+export interface TraceCallEntry extends TraceTxEntry {
   /** The type of trace */
   type: "call";
   /** The action of the trace */
   action: TraceCallAction;
   /** The result of the trace (null if OOG/exception hard) */
   result: TraceCallResult | null;
-  /** The error of the trace (if any) */
-  error?: string;
 }
 
-export interface TraceCreateEntry extends TraceEntryTxBase {
+export interface TraceCreateEntry extends TraceTxEntry {
   /** The type of trace */
-  type: "create" | "create2";
+  type: "create";
   /** The action of the trace */
   action: TraceCreateAction;
   /** The result of the trace (null if OOG/exception hard) */
   result: TraceCreateResult | null;
-  /** The error of the trace (if any) */
-  error?: string;
 }
 
-export interface TraceSuicideEntry extends TraceEntryTxBase {
+export interface TraceSuicideEntry extends TraceTxEntry {
   /** The type of trace */
-  type: "suicide" | "selfdestruct";
+  type: "suicide";
   /** The action of the trace */
   action: TraceSuicideAction;
-  /** The result of the trace (null if OOG/exception hard) */
+  /** The result of the trace */
   result: null;
 }
 
-export interface TraceRewardEntry extends TraceEntryBlockBase {
+export interface TraceRewardEntry extends TraceBlockEntry {
   /** The type of trace */
   type: "reward";
   /** The action of the trace */
   action: TraceRewardAction;
-  /** The result of the trace (null if OOG/exception hard) */
+  /** The result of the trace */
   result: null;
 }

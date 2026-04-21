@@ -1,52 +1,52 @@
 import type { Address, Hex, Quantity } from "viem";
-import type { TraceCallType, TraceRewardType } from "./shared.types.js";
+import type { TraceCallType, TraceCreateType, TraceRewardType } from "./shared.types.js";
 
 // ============================================================================
 // ACTIONS
 // ============================================================================
 
 export type TraceCallAction = {
-  /** The type of call */
+  /** Type of call: "call", "callcode", "delegatecall", or "staticcall" */
   callType: TraceCallType;
-  /** The address of the account that initiated the call */
+  /** Address of the caller */
   from: Address;
-  /** The address of the contract that was called */
+  /** Address of the callee */
   to: Address;
-  /** The amount of gas provided for the call */
+  /** Gas provided for the call */
   gas: Quantity;
-  /** The input data of the call */
+  /** Input data for the call */
   input: Hex;
-  /** The amount of value sent with the call */
+  /** Value transferred in the call */
   value: Quantity;
 }
 
 export type TraceCreateAction = {
-  /** The address of the account that initiated the creation */
+  /** Address of the creator */
   from: Address;
-  /** The amount of gas provided for the creation */
+  /** Gas provided for contract creation */
   gas: Quantity;
-  /** The code of the created contract */
+  /** Contract initialization code */
   init: Hex;
-  /** The amount of value sent with the creation */
+  /** Value sent to the new contract */
   value: Quantity;
-  /** The address of the created contract */
-  creationMethod?: "create" | "create2";
+  /** Type of creation: "create" or "create2" */
+  creationMethod?: TraceCreateType;
 }
 
 export type TraceSuicideAction = {
-  /** The contract/address being self-destructed */
+  /** Address of the contract being destroyed */
   address: Address;
-  /** The contract's remaining balance */
+  /** Balance transferred to refund address */
   balance: Quantity;
-  /** The address receiving funds */
+  /** Address receiving the remaining balance */
   refundAddress: Address;
 }
 
 export type TraceRewardAction = {
-  /** The address of the author of the block */
-  author: Address;
-  /** The type of reward */
+  /** Type of reward: "block" or "uncle" */
   rewardType: TraceRewardType;
-  /** The amount of reward */
+  /** Address receiving the reward */
+  author: Address;
+  /** Amount of the reward */
   value: Quantity;
 }

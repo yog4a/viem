@@ -9,7 +9,9 @@ import type { DebugTraceConfig, NoTracerConfig, DebugTraceResult } from "./types
 export type DebugTraceBlockByNumberEntry<
     C extends DebugTraceConfig = NoTracerConfig,
 > = {
+    /** Transaction hash. */
     txHash: Hash;
+    /** Trace results produced by the tracer. */
     result: DebugTraceResult<C>;
 };
 
