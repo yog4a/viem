@@ -21,12 +21,12 @@
   },
   "devDependencies": {
     "@types/node": "^25.6.0",
-    "tsdown": "^0.21.7",
+    "tsdown": "^0.21.9",
     "tsx": "^4.21.0",
-    "typescript": "^6.0.2"
+    "typescript": "^6.0.3"
   },
   "dependencies": {
-    "viem": "^2.47.16"
+    "viem": "^2.48.2"
   },
   "files": [
     "dist",
